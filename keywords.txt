@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For FlowMeter
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+FlowMeter	 KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getPulseRate	 KEYWORD2
+getFlowRate	 KEYWORD2
+getFlowVolume	 KEYWORD2
+getTotalVolume	 KEYWORD2
+tick	 KEYWORD2
+count	 KEYWORD2
+reset	 KEYWORD2
+attach  KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+Meter KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################
+
