@@ -35,14 +35,14 @@ class FlowMeter
   public:
     FlowMeter(int pin, float cal = 4.5); // Constructor
 
-    void attach(void isr());
+    void attach(void isr() = FlowMeter::interrupt);
     float getPulseRate();               // get current frequency (in pulses per sample duration)
     float getFlowRate();                // get current flow rate (in l/min)
     float getFlowVolume();              // get current volume flow (in ml/s)
     float getTotalVolume();             // get total volume since last reset (in ml)
     void tick(float duration);          // update internal calculations
-    void count();                       // increment internal pulse counter
     void reset();                       // reset all values
+    inline void count();                // increment internal pulse counter
 
   protected:
     int _pin;                           // connection pin (has to be interrupt capable!)
@@ -54,7 +54,7 @@ class FlowMeter
     volatile int _pulses;               // pulses within current sample period
     static volatile unsigned long _totalPulses;
 
-    static void isr();
+    static inline void interrupt();
 };
 
 extern FlowMeter Meter; // flow meter on pin 2

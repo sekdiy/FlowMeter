@@ -24,14 +24,14 @@
  * @param float cal The calibration factor in pulses per litre per minute.
  * @version 2
  */
-FlowMeter::FlowMeter(int pin, float cal)
+FlowMeter::FlowMeter(int pin, float cal) : _pin(pin), _cal(cal)
 {
-  this->_pin = pin;                         // assign connection pin
-  this->_cal = cal;                         // assign calibration factor
   this->reset();                            // initialize internal model
 
   pinMode(pin, INPUT);                      // initialize interrupt pin as input
   digitalWrite(pin, HIGH);                  // pull up flow meter signal line
+
+  this->attach();
 }
 
 /**
@@ -119,7 +119,11 @@ void FlowMeter::tick(float duration) {
  * @version 1
  */
 void FlowMeter::count() {
+    noInterrupts();
+
     this->_pulses++;
+
+    interrupts();
 }
 
 /**
@@ -137,7 +141,7 @@ void FlowMeter::reset() {
     this->_totalVolume = 0.0;
 }
 
-void FlowMeter::isr() {
+void FlowMeter::interrupt() {
     Meter.count();
 }
 
