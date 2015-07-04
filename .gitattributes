@@ -1,0 +1,2 @@
+*.h linguist-language=Arduino
+*.cpp linguist-language=Arduino
