@@ -1,9 +1,5 @@
-/**
+/*
  * Flow Meter library
- *
- * @author sekdiy
- * @date 21.06.2015
- * @version 2
  */
 
 // Compatibility with the Arduino 1.0 library standard
@@ -15,134 +11,68 @@
 
 #include "FlowMeter.h"
 
-/**
- * FlowMeter constructor
- *
- * Provides liquid flow and volume measurement by attaching a flow meter to an interrupt pin.
- *
- * @param int pin The pin that the flow meter is connected to.
- * @param float cal The calibration factor in pulses per litre per minute.
- * @version 2
- */
-FlowMeter::FlowMeter(int pin, float cal) : _pin(pin), _cal(cal)
+FlowMeter::FlowMeter(unsigned int pin, float cal) :
+    _pin(pin),                              //!< store pin number
+    _cal(cal)                               //!< store calibration factor
 {
-  this->reset();                            // initialize internal model
-
-  pinMode(pin, INPUT);                      // initialize interrupt pin as input
-  digitalWrite(pin, HIGH);                  // pull up flow meter signal line
-
-  this->attach();
+  pinMode(pin, INPUT_PULLUP);               //!< initialize interrupt pin as input with pullup
 }
 
-/**
- * attach
- *
- * @param int interrupt The interrupt associated with the input pin.
- * @param void isr() The interrupt service routine that calls countPulse().
- * @version 1
- */
-void FlowMeter::attach(void isr()) {
-  attachInterrupt(this->_pin - 2, isr, RISING);  // attached interrupt service routine
+unsigned int FlowMeter::getPin() {
+  return this->_pin;
 }
 
-/**
- * getPulseRate
- *
- * @return The current frequency (in pulses per sample duration).
- * @version 1
- */
-float FlowMeter::getPulseRate() {
-    return this->_frequency;
+float FlowMeter::getCurrentFlowrate() {
+    return this->_currentFlowrate;
 }
 
-/**
- * getFlowRate
- *
- * @return The current flow rate (in l/min).
- * @version 1
- */
-float FlowMeter::getFlowRate() {
-    return this->_flowrate;
+float FlowMeter::getCurrentVolume() {
+    return this->_currentVolume;
 }
 
-/**
- * getFlowVolume
- *
- * @return The current volume flow (in ml/s).
- * @version 1
- */
-float FlowMeter::getFlowVolume() {
-    return this->_flowVolume;
+float FlowMeter::getAverageFlowrate() {
+    return this->_averageFlowrate;
 }
 
-/**
- * getTotalVolume
- *
- * @return The total volume since last reset (in ml).
- * @version 1
- */
 float FlowMeter::getTotalVolume() {
     return this->_totalVolume;
 }
 
-/**
- * tick
- *
- * Updates all internal calculations at the end of a measurement period.
- *
- * We're sampling flow and volume data over time.
- * Note that the term sampling might be ambiguous.
- * The actual pulses have to be sampled elsewhere (i.e. using countPulse() on external interrupt).
- *
- * @param float duration The sample duration.
- * @version 1
- */
+float FlowMeter::getTotalDuration() {
+    return this->_totalDuration;
+}
+
 void FlowMeter::tick(float duration) {
     /* update rate */
-    this->_frequency = this->_pulses / duration;
-    this->_flowrate = this->_pulses / this->_cal;
+    this->_currentFlowrate = this->_currentPulses / this->_cal;
 
-    /* update volume */
-    this->_flowVolume = (this->_flowrate / 60) * 1000;
-    this->_totalVolume += this->_flowVolume;
+    /* update volume: */
+    this->_currentVolume = this->_currentFlowrate / 60;
+
+    // TODO does this miss the duration part?
+    // diymaster03: "F=4.8 * units von flow (L / min) * time (seconds)"
+
+    /// update rate: l / min = pulses / s / (pulses / s / l / min)
+    // this->_currentFlowrate = this->_currentPulses / duration / this->_cal;
+
+    /// update volume: l = (l / min) / (60 * s)
+    // this->_currentVolume = this->_currentFlowrate / (60 * duration);
+
+    /* update statistics */
+    this->_totalDuration += duration;
+    this->_totalVolume += this->_currentVolume;
+    this->_averageFlowrate = this->_totalVolume / this->_totalDuration;
 
     /* reset counter */
-    this->_pulses = 0;
+    this->_currentPulses = 0;
 }
 
-/**
- * count
- *
- * Increments the internal pulse counter.
- * Serves as an interrupt callback routine.
- *
- * @version 1
- */
 void FlowMeter::count() {
-    noInterrupts();
-
-    this->_pulses++;
-
-    interrupts();
+    this->_currentPulses++;
 }
 
-/**
- * reset
- *
- * Prepares the flow meter for a fresh measurement.
- *
- * @version 1
- */
 void FlowMeter::reset() {
-    this->_pulses = 0;
-    this->_frequency =  0.0;
-    this->_flowrate = 0.0;
-    this->_flowVolume = 0.0;
-    this->_totalVolume = 0.0;
+    this->_currentPulses = 0;
+    this->_currentFlowrate = 0.0;
+    this->_currentVolume = 0.0;
 }
-
-void FlowMeter::interrupt() {
-    Meter.count();
-}
-
-FlowMeter Meter = FlowMeter(flowPin); // flow meter pin from header definition
