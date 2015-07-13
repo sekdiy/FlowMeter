@@ -1,11 +1,12 @@
 /**
- * Flow Meter library
+ * Flow Meter
  *
- * Provides liquid flow and volume measurement by attaching a flow meter to an interrupt pin.
+ * An Ardunino library that provides calibrated liquid flow and volume measurement with flow sensors.
  *
  * @author sekdiy (https://github.com/sekdiy/FlowMeter)
- * @date 7.07.2015
+ * @date 14.07.2015
  * @version See git comments for changes.
+ *
  */
 
 #ifndef FLOWMETER_H
@@ -18,44 +19,94 @@
 #include "WProgram.h"
 #endif
 
+typedef struct {
+  double capacity;      //!< capacity, upper limit of flow rate (in l/min)
+  double kFactor;       //!< "k-factor" (in (pulses/s) / (l/min)), e.g.: 1 pulse/s = kFactor * l/min
+  double mFactor[10];   //!< "meter factor", multiplicative correction factor near unity (per decile of flow)
+} FlowSensorProperties;
+
+extern FlowSensorProperties FS400A;  //!< reference flow sensor properties
+
+class FlowSensorCalibration {
+  public:
+    void setCapacity(double capacity) { this->_properties.capacity = capacity; }
+    void setKFactor(double kFactor) { this->_properties.kFactor = kFactor; }
+    void setMeterFactorPerDecile(unsigned int decile,
+                                 unsigned int mFactor
+                                ) { this->_properties.mFactor[decile] = mFactor; }
+
+    FlowSensorProperties getProperties() { return this->_properties; }
+    double getCapacity() { return this->_properties.capacity; }
+    double getKFactor() { return this->_properties.kFactor; }
+    unsigned int getMeterFactorPerDecile(unsigned int decile) { return this->_properties.mFactor[decile]; }
+
+  protected:
+    FlowSensorProperties _properties;
+};
+
 class FlowMeter
 {
   public:
-    FlowMeter(unsigned int pin,                //!< The pin that the flow meter is connected to (has to be interrupt capable).
-              float cal = 4.8                  //!< The calibration factor (in pulses per second per litre per minute).
-            );                                 //!< Constructor. Initializes a new flow meter object.
+    FlowMeter(unsigned int pin = 2,             //!< The pin that the flow sensor is connected to (has to be interrupt capable, default INT0).
+              FlowSensorProperties prop = FS400A //!< The properties of the actual flow sensor being used (default FS400A).
+             );                                 //!< Constructor. Initializes a new flow meter object.
 
-    unsigned int getPin();                     //!< Returns the Arduino pin number that the flow meter is connected to.
+    unsigned int getPin();                      //!< A convenience method. @return Returns the Arduino pin number that the flow sensor is connected to.
 
-    float getCurrentFlowrate();                //!< Returns the current flow rate since last reset (in l/min).
-    float getCurrentVolume();                  //!< Returns the current volume since last reset (in l).
+    unsigned long getCurrentDuration();         //!< Returns the current tick duration (in s).
+    double getCurrentFlowrate();                //!< Returns the current flow rate since last reset (in liters per tick duration).
+    double getCurrentVolume();                  //!< Returns the current volume since last reset (in  liters per tick duration).
+    double getCurrentError();                   //!< Returns the error resulting from the current measurement (as a probability between 0 and 1).
 
-    float getAverageFlowrate();                //!< Returns the average flow rate in this flow meter instance (in l/min).
-    float getTotalVolume();                    //!< Returns the total volume flown trough this flow meter instance (in l).
-    float getTotalDuration();                  //!< Returns the total run time of this flow meter instance (in s).
+    unsigned long getTotalDuration();           //!< Returns the total run time of this flow meter instance (in s).
+    double getTotalFlowrate();                  //!< Returns the averaged flow rate in this flow meter instance (in l/min).
+    double getTotalVolume();                    //!< Returns the total volume flown trough this flow meter instance (in l).
+    double getTotalError();                     //!< Returns the average error (as a probability between 0 and 1).
 
     /**
-     * Updates all internal calculations at the end of a measurement period.
+     * The tick method updates all internal calculations at the end of a measurement period.
      *
      * We're calculating flow and volume data over time.
-     * The actual pulses have to be sampled using count().
+     * The actual pulses have to be sampled using the count method (i.e. via an interrupt service routine).
      *
-     * @param duration The sample duration (in s).
+     * Flow sensor formulae:
+     *
+     * Let K: pulses per second per unit of measure (i.e. (1/s)/(l/min)),
+     *     f: pulse frequency (1/s),
+     *     Q: flow rate (l/min),
+     *     p: sensor pulses (no dimension/unit),
+     *     t: time since last measurements (s).
+     *
+     * K = f / Q             | units: (1/s) / (l/min) = (1/s) / (l/min)
+     * <=>                   | Substitute p / t for f in order to allow for different measurement intervals
+     * K = (p / t) / Q       | units: ((1/s)/(l/min)) = (1/s) / (l/min)
+     * <=>                   | Solve for Q:
+     * Q = (p / t) / K       | untis: l/min = 1/s / (1/s / (l/min))
+     * <=>                   | Volume in l:
+     * V = Q / 60            | units: l = (l/min) / (min)
+     *
+     * The property K is sometimes stated in pulses per liter or pulses per gallon.
+     * In these cases the unit of measure has to be converted accordingly (e.g. from gal/s to l/min).
+     * See file G34_Flow_rate_to_frequency.jpg for a reference.
+     *
+     * @param duration The tick duration (in ms).
      */
-    void tick(float duration);
+    void tick(unsigned long duration = 1000);
     void count();                              //!< Increments the internal pulse counter. Serves as an interrupt callback routine.
     void reset();                              //!< Prepares the flow meter for a fresh measurement. Resets all current values.
 
   protected:
     unsigned int _pin;                         //!< connection pin (has to be interrupt capable!)
-    float _cal;                                //!< calibration factor (in pulses / s / l / min), e.g.: 1 pulse / s = _cal * l / min
+    FlowSensorProperties _properties;           //!< sensor properties
 
-    float _currentFlowrate = 0.0f;             //!< current flow rate (in l/min), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
-    float _currentVolume = 0.0f;               //!< current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
+    unsigned long _currentDuration;            //!< current tick duration (for normalisation purposes, in ms)
+    double _currentFlowrate = 0.0f;            //!< current flow rate (in l/tick), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
+    double _currentVolume = 0.0f;              //!< current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
+    double _currentCorrection;                 //!< currently applied correction factor
 
-    float _averageFlowrate = 0.0f;             //!< average flow rate since begin of measurement (in l/min)
-    float _totalVolume = 0.0f;                 //!< total volume since begin of measurement (in l)
-    float _totalDuration = 0.0f;               //!< total measured duration since begin of measurement (in s)
+    unsigned long _totalDuration = 0.0f;       //!< total measured duration since begin of measurement (in ms)
+    double _totalVolume = 0.0f;                //!< total volume since begin of measurement (in l)
+    double _totalCorrection = 0.0f;            //!< accumulated correction factors
 
     volatile unsigned long _currentPulses = 0; //!< pulses within current sample period
 };
