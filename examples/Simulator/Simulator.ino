@@ -1,11 +1,14 @@
-#include <Streaming.h>                  // http://arduiniana.org/libraries/streaming/
-#include <FlowMeter.h>                  // https://github.com/sekdiy/FlowMeter
+#include <Streaming.h>  // http://arduiniana.org/libraries/streaming/
+#include <Relay.h>      // https://github.com/sekdiy/Relay
+#include <FlowMeter.h>  // https://github.com/sekdiy/FlowMeter
 
-// connect a flow meter to an interrupt pin (see notes on your Arduino model for pin numbers)
+// simulation period and pulse rate
+const unsigned long period = 1000;    // ms
+const unsigned long frequency = 10;   // Hz
+
+// create a flow meter and a simulator (see notes on your Arduino model for pin numbers)
 FlowMeter Meter = FlowMeter(2);
-
-// set the measurement update period to 1s (1000 ms)
-const unsigned long period = 1 * 1000;
+Relay Simulator = Relay(13);
 
 // define an 'interrupt service handler' (ISR) for every interrupt pin you use
 void MeterISR() {
@@ -23,10 +26,8 @@ void setup() {
 }
 
 void loop() {
-  // wait between output updates
-  delay(period);
 
-  // process the (possibly) counted ticks
+  // process the counted ticks
   Meter.tick(period);
 
   // output some measurement result
@@ -38,4 +39,14 @@ void loop() {
          << "average error (corrected): " << Meter.getTotalError() * 100 << " %, "
          << "total duration: " << Meter.getTotalDuration() / period << " s."
          << endl;
+
+  // simulate flow meter pulses inbetween output updates
+  for (unsigned long int i = 0; i < period; i++) {
+    if (0 == i % (int) ((1000.0f * 1/frequency) / 2.0f)) {
+      Simulator.toggle();
+    } else {
+      delay(1);
+    }
+  }
+
 }
