@@ -20,6 +20,9 @@ void setup() {
   // enable a call to the 'interrupt service handler' (ISR) on every rising edge at the interrupt pin
   // do this setup step for every ISR you have defined, depending on how many interrupts you use
   attachInterrupt(INT0, MeterISR, RISING);
+
+  // sometimes initializing the gear generates some pulses that we should ignore
+  Meter.reset();
 }
 
 void loop() {

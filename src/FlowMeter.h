@@ -36,6 +36,7 @@ typedef struct {
   double mFactor[10];   //!< multiplicative correction factor near unity, "meter factor" (per decile of flow)
 } FlowSensorProperties;
 
+extern FlowSensorProperties FSx00A;             //!<
 extern FlowSensorProperties FS300A;             //!< see documentation about FS300A/SEN02141B
 extern FlowSensorProperties FS400A;             //!< see documentation about FS400A/USN-HS10TA
 
@@ -46,7 +47,7 @@ extern FlowSensorProperties FS400A;             //!< see documentation about FS4
 class FlowMeter {
   public:
     FlowMeter(unsigned int pin = 2,               //!< The pin that the flow sensor is connected to (has to be interrupt capable, default: INT0).
-              FlowSensorProperties prop = FS400A  //!< The properties of the actual flow sensor being used (default: FS400A).
+              FlowSensorProperties prop = FSx00A  //!< The properties of the actual flow sensor being used (default: FS400A).
              );                                   //!< Initializes a new flow meter object.
 
     double getCurrentFlowrate();                  //!< Returns the current flow rate since last reset (in l/min).
