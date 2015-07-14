@@ -1,10 +1,59 @@
-# Simple Flow Meter
+# FlowMeter
 
-An Ardunino library that provides calibrated liquid flow and volume measurement with flow sensors.
+## Purpose
 
-## Calibration and Error
+**FlowMeter** is an Ardunino library that provides calibrated liquid flow and volume measurement with liquid flow sensors.
 
-The **FlowMeter** library is primarily intended for use with impeller flow sensors, although other types of sensors could be made to work.
+The library is primarily intended for use with impeller flow sensors and water, although other types of sensors and media could be made to work.
+
+## Simple Example ##
+
+Getting started with **FlowMeter** is easy. Take a look at the [simple](/examples/Simple/Simple.ino) example:
+
+```c++
+void setup() {
+  // prepare serial communication
+  Serial.begin(9600);
+
+  // enable a call to a helper function on every rising edge
+  attachInterrupt(INT0, MeterISR, RISING);
+}
+
+void loop() {
+  // wait between output updates
+  delay(period);
+
+  // process the (possibly) counted ticks
+  Meter.tick(period);
+
+  // output some measurement result
+  Serial.print("Currently ");
+  Serial.print(Meter.getCurrentFlowrate());
+  Serial.print(" l/min, ");
+  Serial.print(Meter.getTotalVolume());
+  Serial.println(" l total.");
+
+  //
+  // any other code can go here
+  //
+}
+```
+
+In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms).
+
+See the source code of the [**Simple**](examples/Simple/Simple.ino) example (included with this library) for more.
+
+## Installation ##
+
+Just check out the [**FlowMeter**](https://github.com/sekdiy/FlowMeter) Repository on GitHub (or download the ZIP archive) and copy it to your `libraries/` folder (usually within your Arduino sketchbook).
+
+In order to better follow the [examples](/examples) please also get and install the [**Streaming**](http://arduiniana.org/libraries/streaming/) library by Mikal Hart, which is a good idea anyway.
+
+After (re)launching the Arduino IDE, **FlowMeter** will appear in your Sketchbook/Examples menu.
+
+Alternatively, you can use Arduino's `Add .ZIP Library...` menu option.
+
+## Error and Calibration
 
 #### K-Factor
 
@@ -36,17 +85,20 @@ If, however, an instrument has accuracy specified as % RD then the error will al
 
 ## Example Flow Meter
 
-Consider the FS300A "Water Flow Sensor" (as sold by [Seeed Studio](http://www.seeedstudio.com/wiki/G3/4_Water_Flow_sensor), just to name one source).
+Consider the FS300A "Water Flow Sensor":
 
-{photo}
+* Flow rate range: 1～60L/min
+* Precision: 3% (flow rate from 1L/min to 10L/min)
+* K-Factor: 5.5
 
-* range "1～60L/min", suggesting a turndown ratio of 60:1.
+Source: [Seed Studio](http://www.seeedstudio.com/wiki/G3/4_Water_Flow_sensor).
 
-* Notice how no accuracy or reproducability figures are stated.
+![FS300A](/doc/P21408651.jpg "Source: [Seed Studio](http://www.seeedstudio.com/wiki/G3/4_Water_Flow_sensor)")
 
-* Some websites show a figure of 'Accuracy: 2%'.
+Note that while the range figure suggests a turndown ratio of 60:1, the limits to the precision figure indicate an actual turndown ratio of 10:1.
 
-* Other sellers state '+/-10% accuracy' for identically looking sensors, which would be very poor performance.
+Other sellers state '+/-10% accuracy' for identically looking sensors, which would be a very poor performance.
 
-* Pulse Frequency (Hz) = 5.5*Q +/- 2% where Q = water flow (L/min)
-Q(water flow)= Frequency/5.5
+## Documentation
+
+...
