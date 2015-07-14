@@ -6,9 +6,9 @@
 
 The library is primarily intended for use with impeller flow sensors and water, although other types of sensors and media could be made to work.
 
-## Simple Example ##
+## Simple Example
 
-Getting started with **FlowMeter** is easy. Take a look at the [simple](/examples/Simple/Simple.ino) example:
+Getting started with **FlowMeter** is easy. Take a look at this simple example:
 
 ```c++
 void setup() {
@@ -39,11 +39,22 @@ void loop() {
 }
 ```
 
-In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms).
+In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms) within the helper function `MeterISR`.
 
-See the source code of the [**Simple**](examples/Simple/Simple.ino) example (included with this library) for more.
+See the complete source code of the [**Simple**](examples/Simple/Simple.ino) example (included with this library) for more.
 
-## Installation ##
+## Unit of measure
+
+The **FlowMeter** library expresses flow in the unit **l/min**.
+Most units of measure can be derived by simple conversion (just try not to measure in [Sverdrups](https://en.wikipedia.org/wiki/Sverdrup)).
+
+As an example, conversion between **l/min** and US **gal/min** can be done with a factor of *3.78541178*, conversion from **min**  to **s** with a factor of *60*.
+
+```math
+3.78541178 l/min ≈ 1 gal/min ≈ 0.0167 gal/s.
+```
+
+## Installation
 
 Just check out the [**FlowMeter**](https://github.com/sekdiy/FlowMeter) Repository on GitHub (or download the ZIP archive) and copy it to your `libraries/` folder (usually within your Arduino sketchbook).
 
@@ -53,22 +64,79 @@ After (re)launching the Arduino IDE, **FlowMeter** will appear in your Sketchboo
 
 Alternatively, you can use Arduino's `Add .ZIP Library...` menu option.
 
-## Error and Calibration
+## Calibration and Error
+
+The **FlowMeter** library can be used with many different flow sensors (some examples are listed below).
+
+There's a structure **FlowSensorProperties** in the library that you can use to customize the **FlowMeter** for your flow sensor:
+
+```c++
+typedef struct {
+    double capacity;        // capacity
+    double kFactor;         // k-factor
+    double mFactor[10];     // m-factors
+} FlowSensorProperties;
+```
+
+A default set of properties is supplied in order to get you started.
+
+#### Capacity
+
+One quality of a flow sensor is it's **capacity**, i.e. the maximum flow that it is able to handle without stalling or failing.
+
+The **FlowMeter** stores the sensor capacity in the `capacity` field of a `FlowSensorProperties` structure.
 
 #### K-Factor
 
-#### Meter Factor
+This is the most important quantity of the flow sensor you use.
 
-Q_corrected = KF / MF
+In theory a flow sensor (as considered in this library) converts a frequency into a flow rate.
 
-#### [turndown ratio](https://en.wikipedia.org/wiki/Turndown_ratio#Flow_meters)
+The conversion factor between frequency *f* and flow rate *Q* is called the K-Factor *KF*:
 
-"rangeability"
+```math
+KF = f / Q
+ Q = f / KF
+```
 
-turndown ratio = maximum flow / minimum flow
+The **FlowMeter** stores the K-Factor in the `kFactor` field of a `FlowSensorProperties` structure.
 
-The turndown ratio of a typical flow meter is [stated](https://en.wikipedia.org/wiki/Turndown_ratio#Typical_turndown_ratio_of_various_meter_types) as approximately 10:1.
+#### M-Factor
 
+Practical flow sensors are non-ideal in that their output signal contains nonlinearities.
+
+This error can be compensated by measuring volumes at different flow rates/frequencies/volumes and deriving a set of near-unity factors.
+
+```math
+MF = Q_actual / Q_nominal
+   = f_actual / f_nominal
+   = V_actual / V_nominal
+```
+
+The *meter factor* is applied during **FlowMeter's** internal calculations as follows (you don't need to do this yourself):
+
+```math
+Q_corrected = f / (KF / MF)
+            = (f / KF) * MF
+```
+
+The **FlowMeter** stores the M-Factor in the `mFactor` field of a `FlowSensorProperties` structure. It can take ten data points, namely the deciles *0-10%* to *90-100%* of the sensor's `capacity` value.
+
+If you don't provide individual `mFactor` values with your custom `FlowSensorProperties`, simply fill in the unity factor *1.0*.
+
+#### Turndown ratio
+
+The [turndown ratio](https://en.wikipedia.org/wiki/Turndown_ratio#Flow_meters) can be referred to as the "rangeability" of a sensor. It describes the ratio between maximum and minimum flow rates at which the sensor can still deliver a usable signal.
+
+```math
+turndown ratio = Q_max / Q_min
+```
+
+The turndown ratio of a typical flow meter can be  [assumed](https://en.wikipedia.org/wiki/Turndown_ratio#Typical_turndown_ratio_of_various_meter_types) as approximately 10:1.
+
+You should consider this when choosing a flow sensor for your purpose. As a general rule, refrain from using a sensor at it's absolute maximum or minimum flow rate if you expect reliable results.
+
+<!---
 #### Accuracy (% RD vs. % FS)
 
 A *%*RD* accuracy rating indicates an error referred to the meter's *capacity*
@@ -82,23 +150,61 @@ If an instrument has accuracy specified as % FS then the error will have a fixed
 
 Accuracy
 If, however, an instrument has accuracy specified as % RD then the error will always be the same percentage of the actual flow. Using the 100 ln/min instrument again as the example, but this time with a stated accuracy of 1% RD, at 10 ln/min of flow the error is only +/- 1% of the flow, better by 10 times."
+-->
 
-## Example Flow Meter
+## Example Flow Sensors
 
-Consider the FS300A "Water Flow Sensor":
+#### FS300A
 
-* Flow rate range: 1～60L/min
+* Flow rate range: 1–60 l/min
 * Precision: 3% (flow rate from 1L/min to 10L/min)
 * K-Factor: 5.5
 
 Source: [Seed Studio](http://www.seeedstudio.com/wiki/G3/4_Water_Flow_sensor).
 
-![FS300A](/doc/P21408651.jpg "Source: [Seed Studio](http://www.seeedstudio.com/wiki/G3/4_Water_Flow_sensor)")
+![FS300A](/doc/P21408651.jpg)
 
 Note that while the range figure suggests a turndown ratio of 60:1, the limits to the precision figure indicate an actual turndown ratio of 10:1.
 
-Other sellers state '+/-10% accuracy' for identically looking sensors, which would be a very poor performance.
+![Flow Rate vs. Frequency](doc/G34_Flow_rate_to_frequency.jpg)
+
+The flow rate vs. frequency diagram shows two slightly different specimen of the same sensor type. While the difference may seem small, your sensor may vary.
+
+#### FS400A
+
+* Flow rate range: 1–60 l/min
+* Precision: none stated
+* K-Factor: 4.8 (falsely stated as 56)
+
+Source: [Ultisolar](http://ultisensor.com/post/G1-Hall-Effect-Flow-Sensor-USN-HS10TA-1-60Lmin.html)
+
+![FS400A](/doc/USN-HS10TA.jpg)
+
+This sensor is very similar to the FS300A.
+Suitable for irrigation and wherever precision isn't crucial.
+
+![Flow Rate vs. Frequency](doc/G1_pro3.jpg)
+
+The values in this diagram show the difference between the different sensor models (i.e. different frequency per flow rate values).
+
+It's never safe to assume linearity over the complete range.
+Note how the diagram starts at *2 l/min* and ends at *10 l/min*, although the manufacturer states a range of *1–60 l/min*.
+
+#### FHKSC
+
+* Flow rate range: 0.05–1.2 l/min (depending on model)
+* Precision: 2%
+* Repeatability: 0.25%
+* K-Factor: 20–40 (see [datasheet](/doc/932-950xBxxx_GB_20V.pdf))
+
+Source: [Digimesa](http://www.digmesa.com/product-details/flow-sensor-fhksc/)
+
+![FHKSC](doc/FHKSC.jpg)
+
+A rather well documented flow sensor for the vending machine industry. Suitable in applications with lower pressures and flow rates. Higher precision than the above examples.
 
 ## Documentation
 
-...
+For further documentation please take a look at the examples in the `examples/` folder and the source code in the `src/` folder.
+
+You can find datasheets, diagrams and pictures in the `doc/` folder.
