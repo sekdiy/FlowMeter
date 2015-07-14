@@ -23,24 +23,14 @@ void setup() {
   // enable a call to the 'interrupt service handler' (ISR) on every rising edge at the interrupt pin
   // do this setup step for every ISR you have defined, depending on how many interrupts you use
   attachInterrupt(INT0, MeterISR, RISING);
+
+  // sometimes initializing the gear generates some pulses that we should ignore
+  Meter.reset();
 }
 
 void loop() {
 
-  // process the counted ticks
-  Meter.tick(period);
-
-  // output some measurement result
-  Serial << "FlowMeter "
-         << "- flow rate: " << Meter.getCurrentFlowrate() << " l/min, "
-         << "error (corrected): " << Meter.getCurrentError() * 100 << " %, "
-         << "total volume: " << Meter.getTotalVolume() << " l, "
-         << "average flow rate: " << Meter.getTotalFlowrate() << " l/min, "
-         << "average error (corrected): " << Meter.getTotalError() * 100 << " %, "
-         << "total duration: " << Meter.getTotalDuration() / period << " s."
-         << endl;
-
-  // simulate flow meter pulses inbetween output updates
+ // simulate flow meter pulses inbetween output updates
   for (unsigned long int i = 0; i < period; i++) {
     if (0 == i % (int) ((1000.0f * 1/frequency) / 2.0f)) {
       Simulator.toggle();
@@ -49,4 +39,18 @@ void loop() {
     }
   }
 
-}
+  // process the counted ticks
+  Meter.tick(period);
+
+  // output some measurement result
+  Serial << "FlowMeter "
+         << "- flow rate: " << Meter.getCurrentFlowrate() << " l/min, "
+         << "error correction: " << Meter.getCurrentError() << " %, "
+         << "total volume: " << Meter.getTotalVolume() << " l, "
+         << "average flow rate: " << Meter.getTotalFlowrate() << " l/min, "
+         << "average error correction: " << Meter.getTotalError() << " %, "
+         << "current duration: " << Meter.getCurrentDuration() << " ms, "
+         << "total duration: " << Meter.getTotalDuration() / period << " s."
+         << endl;
+
+ }
