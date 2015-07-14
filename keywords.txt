@@ -16,6 +16,7 @@ FlowSensorCalibration KEYWORD1
 
 getPin			        KEYWORD2
 getCurrentFlowrate	KEYWORD2
+getCurrentFrequency KEYWORD2
 getCurrentVolume	  KEYWORD2
 getCurrentDuration  KEYWORD2
 getCurrentError     KEYWORD2

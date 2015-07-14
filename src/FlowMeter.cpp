@@ -19,40 +19,20 @@ FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop) :
   pinMode(pin, INPUT_PULLUP);                                               //!< initialize interrupt pin as input with pullup
 }
 
-unsigned int FlowMeter::getPin() {
-    return this->_pin;
-}
-
 double FlowMeter::getCurrentFlowrate() {
-    return this->_currentFlowrate;
+    return this->_currentFlowrate;                                          //!< in l/min
 }
 
 double FlowMeter::getCurrentVolume() {
-    return this->_currentVolume;
-}
-
-double FlowMeter::getCurrentError() {
-    return this->_currentCorrection / this->_properties.kFactor - 1;
-}
-
-unsigned long FlowMeter::getCurrentDuration() {
-    return this->_currentDuration;
+    return this->_currentVolume;                                            //!< in l
 }
 
 double FlowMeter::getTotalFlowrate() {
-    return this->_totalVolume / (this->_totalDuration / 1000.0f) * 60.0f;
+    return this->_totalVolume / (this->_totalDuration / 1000.0f) * 60.0f;   //!< in l/min
 }
 
 double FlowMeter::getTotalVolume() {
-    return this->_totalVolume;
-}
-
-double FlowMeter::getTotalError() {
-    return (this->_totalCorrection / this->_properties.kFactor) / (this->_totalDuration / 1000.0f) - 1;
-}
-
-unsigned long FlowMeter::getTotalDuration() {
-    return this->_totalDuration;
+    return this->_totalVolume;                                              //!< in l
 }
 
 void FlowMeter::tick(unsigned long duration) {
@@ -60,19 +40,20 @@ void FlowMeter::tick(unsigned long duration) {
     double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
 
-    /* determine current correction factor from static k-factor and flow dependend m-factor (both from sensor properties) */
-    unsigned int decile = round(10 * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of flow rate relative to sensor capacity
-    this->_currentCorrection = this->_properties.kFactor * this->_properties.mFactor[decile];  //!< get k-factor and m-factor for decile from sensor properties
+    /* determine current correction factor (from sensor properties) */
+    unsigned int decile = round(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of current flow relative to sensor capacity
+    this->_currentCorrection = this->_properties.kFactor / this->_properties.mFactor[decile];  //!< combine constant k-factor and m-factor for decile
 
     /* update current calculations: */
-    this->_currentFlowrate = frequency / this->_currentCorrection;          //!< apply correction factor to normalised frequency
-    this->_currentVolume = this->_currentFlowrate / (60.0f/seconds);        //!< get volume from flow rate and normalised time
+    this->_currentFlowrate = frequency / this->_currentCorrection;          //!< get flow rate (in l/min) from normalised frequency and combined correction factor
+    this->_currentVolume = this->_currentFlowrate / (60.0f/seconds);        //!< get volume (in l) from normalised flow rate and normalised time
 
     /* update statistics: */
-    this->_currentDuration = duration;                                      //!< store current tick duration (for normalisation purposes, in ms)
+    this->_currentDuration = duration;                                      //!< store current tick duration (convenience, in ms)
+    this->_currentFrequency = frequency;                                    //!< store current pulses per second (convenience, in 1/s)
     this->_totalDuration += duration;                                       //!< accumulate total duration (in ms)
     this->_totalVolume += this->_currentVolume;                             //!< accumulate total volume (in l)
-    this->_totalCorrection += this->_currentCorrection;                     //!< accumulated total correction sum
+    this->_totalCorrection += this->_currentCorrection;                     //!< accumulate corrections
 
     /** reset counter: */
     this->_currentPulses = 0;
@@ -83,9 +64,10 @@ void FlowMeter::count() {
 }
 
 void FlowMeter::reset() {
-    noInterrupts();                                                         //!< going to change interrupt variables...
+    noInterrupts();                                                         //!< going to change interrupt variable(s)
 
     this->_currentPulses = 0;
+    this->_currentFrequency = 0.0f;
     this->_currentDuration = 0.0f;
     this->_currentFlowrate = 0.0f;
     this->_currentVolume = 0.0f;
@@ -94,7 +76,32 @@ void FlowMeter::reset() {
     interrupts();
 }
 
-/**
- * FS400A
- */
-FlowSensorProperties FS400A = {60.0f, 4.5f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+unsigned int FlowMeter::getPin() {
+    return this->_pin;
+}
+
+unsigned long FlowMeter::getCurrentDuration() {
+    return this->_currentDuration;                                          //!< in ms
+}
+
+double FlowMeter::getCurrentFrequency() {
+    return this->_currentFrequency;                                         //!< in 1/s
+}
+
+double FlowMeter::getCurrentError() {
+    return (this->_properties.kFactor / this->_currentCorrection - 1) * 100;  //!< in %
+}
+
+unsigned long FlowMeter::getTotalDuration() {
+    return this->_totalDuration;                                            //!< in ms
+}
+
+double FlowMeter::getTotalError() {
+    /// average correction factor = time total (in seconds) * (k-factor / corrections total)
+    /// average error = average correction factor - 1
+    /// average error (in %) = average error * 100
+    return ((this->_totalDuration / 1000.0f) * (this->_properties.kFactor / this->_totalCorrection) - 1) * 100; //!< in %
+}
+
+FlowSensorProperties FS400A = {60.0f, 5.5f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+FlowSensorProperties FS400A = {60.0f, 4.8f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};

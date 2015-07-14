@@ -1,12 +1,15 @@
 /**
  * Flow Meter
  *
- * An Ardunino library that provides calibrated liquid flow and volume measurement with flow sensors.
+ * An Ardunino flow meter library that provides calibrated liquid flow and volume measurement with flow sensors.
  *
  * @author sekdiy (https://github.com/sekdiy/FlowMeter)
  * @date 14.07.2015
  * @version See git comments for changes.
  *
+ * @todo Documentation.
+ * @todo Split up flow sensor and flow meter into different classes and files.
+ * @todo
  */
 
 #ifndef FLOWMETER_H
@@ -19,49 +22,38 @@
 #include "WProgram.h"
 #endif
 
+/**
+ * FlowSensorProperties
+ *
+ * Structure that holds essential information about a flow sensor.
+ * Stores general sensor properties and calibration points.
+ *
+ * See file G34_Flow_rate_to_frequency.jpg for reference.
+ */
 typedef struct {
   double capacity;      //!< capacity, upper limit of flow rate (in l/min)
   double kFactor;       //!< "k-factor" (in (pulses/s) / (l/min)), e.g.: 1 pulse/s = kFactor * l/min
-  double mFactor[10];   //!< "meter factor", multiplicative correction factor near unity (per decile of flow)
+  double mFactor[10];   //!< multiplicative correction factor near unity, "meter factor" (per decile of flow)
 } FlowSensorProperties;
 
-extern FlowSensorProperties FS400A;  //!< reference flow sensor properties
+extern FlowSensorProperties FS300A;             //!< see documentation about FS300A/SEN02141B
+extern FlowSensorProperties FS400A;             //!< see documentation about FS400A/USN-HS10TA
 
-class FlowSensorCalibration {
+/**
+ * FlowMeter
+ *
+ */
+class FlowMeter {
   public:
-    void setCapacity(double capacity) { this->_properties.capacity = capacity; }
-    void setKFactor(double kFactor) { this->_properties.kFactor = kFactor; }
-    void setMeterFactorPerDecile(unsigned int decile,
-                                 unsigned int mFactor
-                                ) { this->_properties.mFactor[decile] = mFactor; }
+    FlowMeter(unsigned int pin = 2,               //!< The pin that the flow sensor is connected to (has to be interrupt capable, default: INT0).
+              FlowSensorProperties prop = FS400A  //!< The properties of the actual flow sensor being used (default: FS400A).
+             );                                   //!< Initializes a new flow meter object.
 
-    FlowSensorProperties getProperties() { return this->_properties; }
-    double getCapacity() { return this->_properties.capacity; }
-    double getKFactor() { return this->_properties.kFactor; }
-    unsigned int getMeterFactorPerDecile(unsigned int decile) { return this->_properties.mFactor[decile]; }
+    double getCurrentFlowrate();                  //!< Returns the current flow rate since last reset (in l/min).
+    double getCurrentVolume();                    //!< Returns the current volume since last reset (in l).
 
-  protected:
-    FlowSensorProperties _properties;
-};
-
-class FlowMeter
-{
-  public:
-    FlowMeter(unsigned int pin = 2,             //!< The pin that the flow sensor is connected to (has to be interrupt capable, default INT0).
-              FlowSensorProperties prop = FS400A //!< The properties of the actual flow sensor being used (default FS400A).
-             );                                 //!< Constructor. Initializes a new flow meter object.
-
-    unsigned int getPin();                      //!< A convenience method. @return Returns the Arduino pin number that the flow sensor is connected to.
-
-    unsigned long getCurrentDuration();         //!< Returns the current tick duration (in s).
-    double getCurrentFlowrate();                //!< Returns the current flow rate since last reset (in liters per tick duration).
-    double getCurrentVolume();                  //!< Returns the current volume since last reset (in  liters per tick duration).
-    double getCurrentError();                   //!< Returns the error resulting from the current measurement (as a probability between 0 and 1).
-
-    unsigned long getTotalDuration();           //!< Returns the total run time of this flow meter instance (in s).
-    double getTotalFlowrate();                  //!< Returns the averaged flow rate in this flow meter instance (in l/min).
-    double getTotalVolume();                    //!< Returns the total volume flown trough this flow meter instance (in l).
-    double getTotalError();                     //!< Returns the average error (as a probability between 0 and 1).
+    double getTotalFlowrate();                    //!< Returns the (linear) average flow rate in this flow meter instance (in l/min).
+    double getTotalVolume();                      //!< Returns the total volume flown trough this flow meter instance (in l).
 
     /**
      * The tick method updates all internal calculations at the end of a measurement period.
@@ -87,28 +79,91 @@ class FlowMeter
      *
      * The property K is sometimes stated in pulses per liter or pulses per gallon.
      * In these cases the unit of measure has to be converted accordingly (e.g. from gal/s to l/min).
-     * See file G34_Flow_rate_to_frequency.jpg for a reference.
+     * See file G34_Flow_rate_to_frequency.jpg for reference.
      *
      * @param duration The tick duration (in ms).
      */
     void tick(unsigned long duration = 1000);
-    void count();                              //!< Increments the internal pulse counter. Serves as an interrupt callback routine.
-    void reset();                              //!< Prepares the flow meter for a fresh measurement. Resets all current values.
+    void count();                                 //!< Increments the internal pulse counter. Serves as an interrupt callback routine.
+    void reset();                                 //!< Prepares the flow meter for a fresh measurement. Resets all current values.
+
+    /*
+     * convenience methods and calibration helpers
+     */
+    unsigned int getPin();                        //!< Returns the Arduino pin number that the flow sensor is connected to.
+
+    unsigned long getCurrentDuration();           //!< Returns the duration of the current tick (in ms).
+    double getCurrentFrequency();                 //!< Returns the pulse rate in the current tick (in 1/s).
+    double getCurrentError();                     //!< Returns the error resulting from the current measurement (in %).
+
+    unsigned long getTotalDuration();             //!< Returns the total run time of this flow meter instance (in ms).
+    double getTotalError();                       //!< Returns the (linear) average error of this flow meter instance (in %).
 
   protected:
-    unsigned int _pin;                         //!< connection pin (has to be interrupt capable!)
-    FlowSensorProperties _properties;           //!< sensor properties
+    unsigned int _pin;                            //!< connection pin (has to be interrupt capable!)
+    FlowSensorProperties _properties;             //!< sensor properties (including calibration data)
 
-    unsigned long _currentDuration;            //!< current tick duration (for normalisation purposes, in ms)
-    double _currentFlowrate = 0.0f;            //!< current flow rate (in l/tick), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
-    double _currentVolume = 0.0f;              //!< current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
-    double _currentCorrection;                 //!< currently applied correction factor
+    unsigned long _currentDuration;               //!< current tick duration (convenience, in ms)
+    double _currentFrequency;                     //!< current pulses per second (convenience, in 1/s)
+    double _currentFlowrate = 0.0f;               //!< current flow rate (in l/tick), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
+    double _currentVolume = 0.0f;                 //!< current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
+    double _currentCorrection;                    //!< currently applied correction factor
 
-    unsigned long _totalDuration = 0.0f;       //!< total measured duration since begin of measurement (in ms)
-    double _totalVolume = 0.0f;                //!< total volume since begin of measurement (in l)
-    double _totalCorrection = 0.0f;            //!< accumulated correction factors
+    unsigned long _totalDuration = 0.0f;          //!< total measured duration since begin of measurement (in ms)
+    double _totalVolume = 0.0f;                   //!< total volume since begin of measurement (in l)
+    double _totalCorrection = 0.0f;               //!< accumulated correction factors
 
-    volatile unsigned long _currentPulses = 0; //!< pulses within current sample period
+    volatile unsigned long _currentPulses = 0;    //!< pulses within current sample period
+};
+
+/**
+ * FlowSensorCalibration
+ *
+ * Convenience class for manipulating sensor properties.
+ */
+class FlowSensorCalibration {
+  public:
+    FlowSensorCalibration() {};
+    FlowSensorCalibration(FlowSensorProperties properties): _properties(properties) {};
+
+    FlowSensorCalibration* setProperties(FlowSensorProperties properties) {
+        this->_properties = properties;
+        return this;
+    };
+
+    FlowSensorCalibration* setCapacity(double capacity) {
+        this->_properties.capacity = capacity;
+        return this;
+    }
+
+    FlowSensorCalibration* setKFactor(double kFactor) {
+        this->_properties.kFactor = kFactor;
+        return this;
+    }
+
+    FlowSensorCalibration* setMeterFactorPerDecile(unsigned int decile, unsigned int mFactor) {
+        this->_properties.mFactor[decile] = mFactor;
+        return this;
+    }
+
+    FlowSensorProperties getProperties() {
+        return this->_properties;
+    }
+
+    double getCapacity() {
+        return this->_properties.capacity;
+    }
+
+    double getKFactor() {
+        return this->_properties.kFactor;
+    }
+
+    unsigned int getMeterFactorPerDecile(unsigned int decile) {
+        return this->_properties.mFactor[decile];
+    }
+
+  protected:
+    FlowSensorProperties _properties;
 };
 
 #endif   // FLOWMETER_H
