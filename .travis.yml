@@ -7,7 +7,7 @@ before_install:
   - wget http://downloads.arduino.cc/arduino-1.6.5-linux64.tar.xz
   - tar xf arduino-1.6.5-linux64.tar.xz
   - mv arduino-1.6.5 /usr/local/share/arduino
-  - sln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
+  - ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/FlowMeter
 #  - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
