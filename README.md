@@ -49,7 +49,7 @@ See the complete source code of the [**Simple**](examples/Simple/Simple.ino) exa
 // let's provide our own sensor properties, including calibration points for error correction
 FlowSensorProperties MySensor = {50.0f, 4.8f, {1.2, 1.1, 1.05, 1, 1, 1, 1, 0.95, 0.9, 0.8}};
 
-// connect a wire bridge between pins 13 and 3 in order to simulate flow sensor pulses
+// let's pretend there's a flow sensor connected to pin 3
 FlowMeter Meter = FlowMeter(3, MySensor);
 ```
 
@@ -64,9 +64,7 @@ MySensor.mFactor = {1.2, 1.1, 1.05, 1, 1, 1, 1, 0.95, 0.9, 0.8};
 ```
 
 The `mFactor` array provides a non-linear, flow dependent correction to the otherwise flow independent `kFactor`.
-The ten data points in the array correspond to flow rates within the [(per-)centiles](https://en.wikipedia.org/wiki/Percentile) (0%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80% and 90%) of the `capacity` value, respectively.
-
-See [below](#calibration-and-error) for the math and motivation behind sensor calibration.
+The ten data points in the array correspond to flow rates within the [centiles](https://en.wikipedia.org/wiki/Percentile) (0%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80% and 90%) of the `capacity` value, respectively.
 
 The example then randomly simulates a sensor frequency and measurement period.
 The flow rate varies between 0 and `capacity` with updates after up to five seconds.
@@ -78,7 +76,7 @@ You can of course play with the values in `MySensor` to see how this changes the
 So what this example demonstrates is how the error correction works and that the results are independent of how long or short your measurement periods are (within limits, of course).
 -->
 
-See the complete source code of the [**Simulation**](examples/Simulation/Simulation.ino) example (included with this library) for more.
+See [below](#calibration-and-error) for the math and motivation behind sensor calibration. The complete source code of the [**Simulation**](examples/Simulator/Simulator.ino) example is included with this library.
 
 ## Unit of measure
 
@@ -129,7 +127,7 @@ This is the most important quality of the flow sensor you use.
 
 In theory a flow sensor (as considered in this library) converts a frequency into a flow rate.
 
-The conversion factor between frequency *f* and flow rate *Q* is called the K-Factor *KF*:
+The conversion factor between frequency *f* and flow rate *Q* is called the **K-Factor** *KF*:
 
 ```math
 KF = f / Q
