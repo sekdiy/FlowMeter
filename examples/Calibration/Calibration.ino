@@ -39,7 +39,7 @@ void loop() {
         // output some measurement result
         Serial.println("FlowMeter - current flow rate: " + String(Meter.getCurrentFlowrate()) + " l/min, " +
                        "nominal volume: " + String(Meter.getTotalVolume()) + " l, " +
-                       "compensated error: " + String(Meter.getCurrentError()) + "%, " +
+                       "compensated error: " + String(Meter.getCurrentError()) + " %, " +
                        "duration: " + String(Meter.getTotalDuration() / 1000) + " s.");
 
         // prepare for next cycle
