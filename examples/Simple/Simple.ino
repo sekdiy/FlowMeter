@@ -1,11 +1,10 @@
-#include <Streaming.h>                  // http://arduiniana.org/libraries/streaming/
 #include <FlowMeter.h>                  // https://github.com/sekdiy/FlowMeter
 
 // connect a flow meter to an interrupt pin (see notes on your Arduino model for pin numbers)
 FlowMeter Meter = FlowMeter(2);
 
 // set the measurement update period to 1s (1000 ms)
-const unsigned long period = 1 * 1000;
+const unsigned long period = 1000;
 
 // define an 'interrupt service handler' (ISR) for every interrupt pin you use
 void MeterISR() {
@@ -33,12 +32,9 @@ void loop() {
   Meter.tick(period);
 
   // output some measurement result
-  Serial << "FlowMeter "
-         << "- flow rate: " << Meter.getCurrentFlowrate() << " l/min, "
-         << "error (corrected): " << Meter.getCurrentError() * 100 << " %, "
-         << "total volume: " << Meter.getTotalVolume() << " l, "
-         << "average flow rate: " << Meter.getTotalFlowrate() << " l/min, "
-         << "average error (corrected): " << Meter.getTotalError() * 100 << " %, "
-         << "total duration: " << Meter.getTotalDuration() / period << " s."
-         << endl;
+  Serial.println("Currently " + String(Meter.getCurrentFlowrate()) + " l/min, " + String(Meter.getTotalVolume())+ " l total.");
+
+  //
+  // any other code can go here
+  //
 }
