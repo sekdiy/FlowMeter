@@ -1,7 +1,7 @@
 /**
  * Flow Meter
  *
- * An Ardunino flow meter library that provides calibrated liquid flow and volume measurement with flow sensors.
+ * An Arduino flow meter library that provides calibrated liquid flow and volume measurement with flow sensors.
  *
  * @author sekdiy (https://github.com/sekdiy/FlowMeter)
  * @date 14.07.2015

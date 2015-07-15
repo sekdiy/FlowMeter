@@ -41,8 +41,8 @@ void FlowMeter::tick(unsigned long duration) {
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
 
     /* determine current correction factor (from sensor properties) */
-    unsigned int decile = round(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of current flow relative to sensor capacity
-    this->_currentCorrection = this->_properties.kFactor / this->_properties.mFactor[decile];  //!< combine constant k-factor and m-factor for decile
+    unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of current flow relative to sensor capacity
+    this->_currentCorrection = this->_properties.kFactor / this->_properties.mFactor[min(decile, 9)];           //!< combine constant k-factor and m-factor for decile
 
     /* update current calculations: */
     this->_currentFlowrate = frequency / this->_currentCorrection;          //!< get flow rate (in l/min) from normalised frequency and combined correction factor
@@ -53,7 +53,7 @@ void FlowMeter::tick(unsigned long duration) {
     this->_currentFrequency = frequency;                                    //!< store current pulses per second (convenience, in 1/s)
     this->_totalDuration += duration;                                       //!< accumulate total duration (in ms)
     this->_totalVolume += this->_currentVolume;                             //!< accumulate total volume (in l)
-    this->_totalCorrection += this->_currentCorrection;                     //!< accumulate corrections
+    this->_totalCorrection += this->_currentCorrection * duration;          //!< accumulate corrections over time
 
     /** reset counter: */
     this->_currentPulses = 0;
@@ -89,6 +89,9 @@ double FlowMeter::getCurrentFrequency() {
 }
 
 double FlowMeter::getCurrentError() {
+    /// error (in %) = error * 100
+    /// error = correction rate - 1
+    /// correction rate = k-factor / correction
     return (this->_properties.kFactor / this->_currentCorrection - 1) * 100;  //!< in %
 }
 
@@ -97,10 +100,10 @@ unsigned long FlowMeter::getTotalDuration() {
 }
 
 double FlowMeter::getTotalError() {
-    /// average correction factor = time total (in seconds) * (k-factor / corrections total)
-    /// average error = average correction factor - 1
     /// average error (in %) = average error * 100
-    return ((this->_totalDuration / 1000.0f) * (this->_properties.kFactor / this->_totalCorrection) - 1) * 100; //!< in %
+    /// average error = average correction rate - 1
+    /// average correction rate = k-factor / corrections over time * total time
+    return (this->_properties.kFactor / this->_totalCorrection * this->_totalDuration - 1) * 100;
 }
 
 FlowSensorProperties FSx00A = {60.0f, 5.0f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
