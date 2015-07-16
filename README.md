@@ -1,4 +1,4 @@
-# FlowMeter [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter)
+# Sekdiy FlowMeter Library [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter)
 
 ## Purpose
 
