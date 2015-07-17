@@ -41,42 +41,7 @@ void loop() {
 
 In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms) within the helper function `MeterISR`.
 
-See the complete source code of the [**Simple**](examples/Simple/Simple.ino) example (included with this library) for more.
-
-## Simulation Example <a id="simulation-example"></a>
-
-```c++
-// let's provide our own sensor properties, including calibration points for error correction
-FlowSensorProperties MySensor = {50.0f, 4.8f, {1.2, 1.1, 1.05, 1, 1, 1, 1, 0.95, 0.9, 0.8}};
-
-// let's pretend there's a flow sensor connected to pin 3
-FlowMeter Meter = FlowMeter(3, MySensor);
-```
-
-In this example, the `FlowMeter` object `Meter` is initialized to pin 3 using a custom `FlowSensorProperties` structure `MySensor`.
-
-This structure holds the following values (written in a compact inline notation):
-
-```c++
-MySensor.capacity = 50.0f;
-MySensor.kFactor = 4.8f;
-MySensor.mFactor = {1.2, 1.1, 1.05, 1, 1, 1, 1, 0.95, 0.9, 0.8};
-```
-
-The `mFactor` array provides a non-linear, flow dependent correction to the otherwise flow independent `kFactor`.
-The ten data points in the array correspond to flow rates within the [centiles](https://en.wikipedia.org/wiki/Percentile) (0%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80% and 90%) of the `capacity` value, respectively.
-
-The example then randomly simulates a sensor frequency and measurement period.
-The flow rate varies between 0 and `capacity` with updates after up to five seconds.
-
-After running the simulation for a while, the average flow rate settles around `capacity/2` and the average error converges towards 0 (since the `mFactor` array has a mean value of 1).
-You can of course play with the values in `MySensor` to see how this changes the behaviour.
-
-<!---
-So what this example demonstrates is how the error correction works and that the results are independent of how long or short your measurement periods are (within limits, of course).
--->
-
-See [below](#calibration-and-error) for the math and motivation behind sensor calibration. The complete source code of the [**Simulation**](examples/Simulator/Simulator.ino) example is included with this library.
+Please read on in the [Examples](https://github.com/sekdiy/FlowMeter/wiki/Examples) section of the library's [wiki pages](https://github.com/sekdiy/FlowMeter/wiki).
 
 ## Unit of measure
 
@@ -101,22 +66,20 @@ Alternatively, you can use Arduino's `Add .ZIP Library...` menu option.
 
 The **FlowMeter** library can be used with many different flow sensors (some examples are listed [below](#example-flow-sensors)).
 
-[...](wiki/Properties.md)
+[...](https://github.com/sekdiy/FlowMeter/wiki/Properties.md)
 
 ## Example Flow Sensors <a id="example-flow-sensors"></a>
 
-[...](wiki/Sensors.md)
+[...](https://github.com/sekdiy/FlowMeter/wiki/Sensors.md)
 
 ## How to calibrate your own sensor
 
 It's easy to calibrate yourself. Preferrably you'd do this after installing the sensor into your project. The flow meter then benefits from increased precision within the flow range of your application.
 
-[...](wiki/Calibration.md)
+[...](https://github.com/sekdiy/FlowMeter/wiki/Calibration.md)
 
 ## Documentation
 
-For further documentation please take a look at the **FlowMeter** [wiki pages](wiki/).
-
-You can find additional datasheets, diagrams and pictures in the folder `doc/`.
+For further documentation please take a look at the **FlowMeter** [wiki pages](https://github.com/sekdiy/FlowMeter/wiki).
 
 Also, the library source code (in the folder [`src/`](src/)) and the examples (in the folder [`examples/`](examples/)) are fully documented.
