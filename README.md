@@ -4,7 +4,7 @@
 
 You can use it to count flow and volume of liquids and gases (although the documentation focuses on applications using liquids) and can support multiple flow sensors at the same time.
 
-It also works as a totalizer, accumulating total volume and average flow rate over the total run time of your project.
+It also works as a totalizer, accumulating total volume and average flow rate over the run time of your project.
 
 A provision for calibration helps you to get the most out of your sensor. You can even estimate the recent and overall error margin.
 
@@ -68,16 +68,18 @@ As an example, conversion between **l/min** and US **gal/min** can be done with 
 
 Please make sure you consult the [documentation](https://github.com/sekdiy/FlowMeter/wiki/Properties) in order to further understand how the library works.
 
-## How to calibrate your own sensor
+## Should you calibrate your own sensor?
 
-The **FlowMeter** library can be used with many different flow sensors ([sensor examples](https://github.com/sekdiy/FlowMeter/wiki/Sensors) are listed in the documentation).
+The **FlowMeter** library can be used with many different flow sensors right away. Some [sensor examples](https://github.com/sekdiy/FlowMeter/wiki/Sensors) are listed in the documentation.
 
-It's easy to calibrate yourself. Preferrably you'd do this after installing the sensor into your project. The flow meter then benefits from increased precision within the flow range of your application.
+For many projects you don't need to worry about calibration. But it still makes sense to be aware of the limitations that come with an uncalibrated sensor in a metering application.
+
+It's easy to calibrate yourself. Preferrably you'd do this after installing the sensor into your project. The flow meter then benefits from increased precision within the viscosity and flow range of your application.
 
 There's a [complete how-to](https://github.com/sekdiy/FlowMeter/wiki/Calibration) in the documentation.
 
 ## Documentation
 
-For further documentation please take a look at the **FlowMeter** [documentation pages](https://github.com/sekdiy/FlowMeter/wiki).
+For further details please take a look at the **FlowMeter** [documentation pages](https://github.com/sekdiy/FlowMeter/wiki).
 
 Also, the library source code (in the folder [`src/`](src/)) and the examples (in the folder [`examples/`](examples/)) are fully documented.

@@ -8,7 +8,7 @@ FlowMeter Meter = FlowMeter(2, MySensor);
 long period = 1000;   // one second ( in milliseconds)
 long lastTime = 0;
 
-// define an 'interrupt service handler' (ISR)
+// define an 'interrupt service routine' (ISR)
 void MeterISR() {
     // let our flow meter count the pulses
     Meter.count();

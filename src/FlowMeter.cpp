@@ -106,6 +106,6 @@ double FlowMeter::getTotalError() {
     return (this->_properties.kFactor / this->_totalCorrection * this->_totalDuration - 1) * 100;
 }
 
-FlowSensorProperties FSx00A = {60.0f, 5.0f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+FlowSensorProperties UncalibratedSensor = {60.0f, 5.0f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 FlowSensorProperties FS300A = {60.0f, 5.5f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 FlowSensorProperties FS400A = {60.0f, 4.8f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
