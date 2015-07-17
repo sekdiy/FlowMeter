@@ -1,12 +1,16 @@
-# Sekdiy FlowMeter Library [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter)
+# FlowMeter Library [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter)
 
-## Purpose
+**FlowMeter** is an Arduino library that provides calibrated flow and volume measurement with flow sensors.
 
-**FlowMeter** is an Arduino library that provides calibrated liquid flow and volume measurement with liquid flow sensors.
+You can use it to count flow and volume of liquids and gases (although the documentation focuses on applications using liquids) and can support multiple flow sensors at the same time.
 
-The library is primarily intended for use with impeller flow sensors and water, although other types of sensors and media could be made to work.
+It also works as a totalizer, accumulating total volume and average flow rate over the total run time of your project.
 
-## Simple Example
+A provision for calibration helps you to get the most out of your sensor. You can even estimate the recent and overall error margin.
+
+The library is intended for use with flow sensors that provide a frequency output signal proportional to flow, although other types of sensors could be made to work.
+
+## A Simple Example
 
 Getting started with **FlowMeter** is easy. Take a look at this simple example:
 
@@ -39,9 +43,17 @@ void loop() {
 }
 ```
 
-In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms) within the helper function `MeterISR`.
+In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms).
 
-Please read on in the [Examples](https://github.com/sekdiy/FlowMeter/wiki/Examples) section of the library's [wiki pages](https://github.com/sekdiy/FlowMeter/wiki).
+So ever measurement `period`, the current *flow rate* and the total *volume* are printed out.
+
+Please read on in the [examples](https://github.com/sekdiy/FlowMeter/wiki/Examples) section of the library's [documentation pages](https://github.com/sekdiy/FlowMeter/wiki).
+
+## Installing the library
+
+Just check out the [**FlowMeter**](https://github.com/sekdiy/FlowMeter) Repository on GitHub (or download the ZIP archive) and copy it to your `libraries/` folder (usually within your Arduino sketchbook).
+
+See the [installation](https://github.com/sekdiy/FlowMeter/wiki/Installation) section in the [documentation pages](https://github.com/sekdiy/FlowMeter/wiki) for more.
 
 ## Unit of measure
 
@@ -54,32 +66,18 @@ As an example, conversion between **l/min** and US **gal/min** can be done with 
 3.78541178 l/min ≈ 1 gal/min ≈ 0.0167 gal/s.
 ```
 
-## Installation
-
-Just check out the [**FlowMeter**](https://github.com/sekdiy/FlowMeter) Repository on GitHub (or download the ZIP archive) and copy it to your `libraries/` folder (usually within your Arduino sketchbook).
-
-After (re)launching the Arduino IDE, **FlowMeter** will appear in your Sketchbook/Examples menu.
-
-Alternatively, you can use Arduino's `Add .ZIP Library...` menu option.
-
-## Calibration and Error <a id="calibration-and-error"></a>
-
-The **FlowMeter** library can be used with many different flow sensors (some examples are listed [below](#example-flow-sensors)).
-
-[...](https://github.com/sekdiy/FlowMeter/wiki/Properties.md)
-
-## Example Flow Sensors <a id="example-flow-sensors"></a>
-
-[...](https://github.com/sekdiy/FlowMeter/wiki/Sensors.md)
+Please make sure you consult the [documentation](https://github.com/sekdiy/FlowMeter/wiki/Properties) in order to further understand how the library works.
 
 ## How to calibrate your own sensor
 
+The **FlowMeter** library can be used with many different flow sensors ([sensor examples](https://github.com/sekdiy/FlowMeter/wiki/Sensors) are listed in the documentation).
+
 It's easy to calibrate yourself. Preferrably you'd do this after installing the sensor into your project. The flow meter then benefits from increased precision within the flow range of your application.
 
-[...](https://github.com/sekdiy/FlowMeter/wiki/Calibration.md)
+There's a [complete how-to](https://github.com/sekdiy/FlowMeter/wiki/Calibration) in the documentation.
 
 ## Documentation
 
-For further documentation please take a look at the **FlowMeter** [wiki pages](https://github.com/sekdiy/FlowMeter/wiki).
+For further documentation please take a look at the **FlowMeter** [documentation pages](https://github.com/sekdiy/FlowMeter/wiki).
 
 Also, the library source code (in the folder [`src/`](src/)) and the examples (in the folder [`examples/`](examples/)) are fully documented.
