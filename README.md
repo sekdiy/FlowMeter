@@ -45,7 +45,7 @@ void loop() {
 
 In the above example, a flow sensor is assumed to be connected to the `INT0` pin. The corresponding object `Meter` is updated every `period` (in milliseconds, e.g. 1000ms).
 
-So ever measurement `period`, the current *flow rate* and the total *volume* are printed out.
+So after every measurement `period`, the current *flow rate* and the total *volume* are printed out.
 
 Please read on in the [examples](https://github.com/sekdiy/FlowMeter/wiki/Examples) section of the library's [documentation pages](https://github.com/sekdiy/FlowMeter/wiki).
 
@@ -77,6 +77,8 @@ For many projects you don't need to worry about calibration. But it still makes 
 It's easy to calibrate yourself. Preferrably you'd do this after installing the sensor into your project. The flow meter then benefits from increased precision within the viscosity and flow range of your application.
 
 There's a [complete how-to](https://github.com/sekdiy/FlowMeter/wiki/Calibration) in the documentation.
+
+![Calibration Example: Irrigation with FS400A](https://github.com/sekdiy/FlowMeter/wiki/images/FS400A-calibration.jpg)
 
 ## Documentation
 
