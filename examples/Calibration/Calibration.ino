@@ -5,7 +5,7 @@ FlowSensorProperties MySensor = {60.0f, 5.5f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 FlowMeter Meter = FlowMeter(2, MySensor);
 
 // timekeeping variables
-long period = 1000;   // one second ( in milliseconds)
+long period = 1000;   // one second (in milliseconds)
 long lastTime = 0;
 
 // define an 'interrupt service routine' (ISR)

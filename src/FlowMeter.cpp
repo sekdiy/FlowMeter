@@ -36,9 +36,13 @@ double FlowMeter::getTotalVolume() {
 }
 
 void FlowMeter::tick(unsigned long duration) {
-    /* some convenience values */
+    /* sampling and normalisation */
     double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
+    unsigned int interrupts = SREG;                                         //!< save the interrupt status
+    cli();                                                                  //!< going to change interrupt variable(s)
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
+    this->_currentPulses = 0;                                               //!< reset pulse counter after successfull sampling
+    SREG = interrupts;                                                      //!< done changing interrupt variable(s)
 
     /* determine current correction factor (from sensor properties) */
     unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of current flow relative to sensor capacity
@@ -54,26 +58,23 @@ void FlowMeter::tick(unsigned long duration) {
     this->_totalDuration += duration;                                       //!< accumulate total duration (in ms)
     this->_totalVolume += this->_currentVolume;                             //!< accumulate total volume (in l)
     this->_totalCorrection += this->_currentCorrection * duration;          //!< accumulate corrections over time
-
-    /** reset counter: */
-    this->_currentPulses = 0;
 }
 
 void FlowMeter::count() {
-    this->_currentPulses++;
+    this->_currentPulses++;                                                 //!< this should be called from an interrupt service routine
 }
 
 void FlowMeter::reset() {
-    noInterrupts();                                                         //!< going to change interrupt variable(s)
+    unsigned int interrupts = SREG;                                         //!< save interrupt status
+    cli();                                                                  //!< going to change interrupt variable(s)
+    this->_currentPulses = 0;                                               //!< reset pulse counter
+    SREG = interrupts;                                                      //!< done changing interrupt variable(s)
 
-    this->_currentPulses = 0;
     this->_currentFrequency = 0.0f;
     this->_currentDuration = 0.0f;
     this->_currentFlowrate = 0.0f;
     this->_currentVolume = 0.0f;
     this->_currentCorrection = 0.0f;
-
-    interrupts();
 }
 
 unsigned int FlowMeter::getPin() {
