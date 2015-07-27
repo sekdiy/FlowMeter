@@ -1,5 +1,8 @@
 # FlowMeter Library [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter)
 
+[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fsekdiy%2FlowMeter&cid=2238D739-76DE-4205-9768-2F3277FA2561&tid=UA-65656434-1)]()
+
+
 **FlowMeter** is an Arduino library that provides calibrated flow and volume measurement with flow sensors.
 
 You can use it to count flow and volume of liquids and gases (although the documentation focuses on applications using liquids) and can support multiple flow sensors at the same time.
