@@ -86,4 +86,4 @@ For further details please take a look at the **FlowMeter** [documentation pages
 
 Also, the library source code (in the folder [`src/`](src/)) and the examples (in the folder [`examples/`](examples/)) are fully documented.
 
-[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fsekdiy%2FlowMeter&cid=2238D739-76DE-4205-9768-2F3277FA2561&tid=UA-65656434-1?aip=1?dt=README)]()
+[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fsekdiy%2FFlowMeter&cid=2238D739-76DE-4205-9768-2F3277FA2561&tid=UA-65656434-1?aip=1?dt=README)]()
