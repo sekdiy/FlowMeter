@@ -38,15 +38,15 @@ double FlowMeter::getTotalVolume() {
 void FlowMeter::tick(unsigned long duration) {
     /* sampling and normalisation */
     double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
-    unsigned int interrupts = SREG;                                         //!< save the interrupt status
     cli();                                                                  //!< going to change interrupt variable(s)
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
     this->_currentPulses = 0;                                               //!< reset pulse counter after successfull sampling
-    SREG = interrupts;                                                      //!< done changing interrupt variable(s)
+    sei();                                                                  //!< done changing interrupt variable(s)
 
     /* determine current correction factor (from sensor properties) */
-    unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));  //!< decile of current flow relative to sensor capacity
-    this->_currentCorrection = this->_properties.kFactor / this->_properties.mFactor[min(decile, 9)];           //!< combine constant k-factor and m-factor for decile
+    unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));          //!< decile of current flow relative to sensor capacity
+    unsigned int ceiling =  9;                                                                                          //!< highest possible decile index
+    this->_currentCorrection = this->_properties.kFactor / this->_properties.mFactor[min(decile, ceiling)];             //!< combine constant k-factor and m-factor for decile
 
     /* update current calculations: */
     this->_currentFlowrate = frequency / this->_currentCorrection;          //!< get flow rate (in l/min) from normalised frequency and combined correction factor
@@ -65,10 +65,9 @@ void FlowMeter::count() {
 }
 
 void FlowMeter::reset() {
-    unsigned int interrupts = SREG;                                         //!< save interrupt status
     cli();                                                                  //!< going to change interrupt variable(s)
     this->_currentPulses = 0;                                               //!< reset pulse counter
-    SREG = interrupts;                                                      //!< done changing interrupt variable(s)
+    sei();                                                                  //!< done changing interrupt variable(s)
 
     this->_currentFrequency = 0.0f;
     this->_currentDuration = 0.0f;
