@@ -2,13 +2,7 @@
  * Flow Meter
  */
 
-// Compatibility with the Arduino 1.0 library standard
-#if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
 #include "FlowMeter.h"                                                      // https://github.com/sekdiy/FlowMeter
 #include <math.h>
 
@@ -104,6 +98,21 @@ double FlowMeter::getTotalError() {
     /// average error = average correction rate - 1
     /// average correction rate = k-factor / corrections over time * total time
     return (this->_properties.kFactor / this->_totalCorrection * this->_totalDuration - 1) * 100;
+}
+
+FlowMeter* FlowMeter::setTotalDuration(unsigned long totalDuration) {
+    this->_totalDuration = totalDuration;
+    return this;
+}
+
+FlowMeter* FlowMeter::setTotalVolume(double totalVolume) {
+    this->_totalVolume = totalVolume;
+    return this;
+}
+
+FlowMeter* FlowMeter::setTotalCorrection(double totalCorrection) {
+    this->_totalCorrection = totalCorrection;
+    return this;
 }
 
 FlowSensorProperties UncalibratedSensor = {60.0f, 5.0f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
