@@ -26,6 +26,10 @@ getTotalDuration	  KEYWORD2
 getTotalFlowrate	  KEYWORD2
 getTotalError       KEYWORD2
 
+setTotalVolume	 	  KEYWORD2
+setTotalDuration	  KEYWORD2
+setTotalError       KEYWORD2
+
 tick	 		KEYWORD2
 count	 		KEYWORD2
 reset	 		KEYWORD2
@@ -34,7 +38,9 @@ reset	 		KEYWORD2
 # Instances (KEYWORD2)
 #######################################
 
-FS400A    KEYWORD2
+UncalibratedSensor  KEYWORD2
+FS300A              KEYWORD2
+FS400A              KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
