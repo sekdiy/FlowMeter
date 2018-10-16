@@ -6,41 +6,41 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-FlowMeter	 KEYWORD1
-FlowSensorProperties  KEYWORD1
-FlowSensorCalibration KEYWORD1
+FlowMeter	KEYWORD1
+FlowSensorProperties	KEYWORD1
+FlowSensorCalibration	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-getPin			        KEYWORD2
+getPin	KEYWORD2
 getCurrentFlowrate	KEYWORD2
-getCurrentFrequency KEYWORD2
-getCurrentVolume	  KEYWORD2
-getCurrentDuration  KEYWORD2
-getCurrentError     KEYWORD2
+getCurrentFrequency	KEYWORD2
+getCurrentVolume	KEYWORD2
+getCurrentDuration	KEYWORD2
+getCurrentError	KEYWORD2
 
-getTotalVolume	 	  KEYWORD2
-getTotalDuration	  KEYWORD2
-getTotalFlowrate	  KEYWORD2
-getTotalError       KEYWORD2
+getTotalVolume	KEYWORD2
+getTotalDuration	KEYWORD2
+getTotalFlowrate	KEYWORD2
+getTotalError	KEYWORD2
 
-setTotalVolume	 	  KEYWORD2
-setTotalDuration	  KEYWORD2
-setTotalError       KEYWORD2
+setTotalVolume	KEYWORD2
+setTotalDuration	KEYWORD2
+setTotalError	KEYWORD2
 
-tick	 		KEYWORD2
-count	 		KEYWORD2
-reset	 		KEYWORD2
+tick	KEYWORD2
+count	KEYWORD2
+reset	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
 #######################################
 
-UncalibratedSensor  KEYWORD2
-FS300A              KEYWORD2
-FS400A              KEYWORD2
+UncalibratedSensor	KEYWORD2
+FS300A	KEYWORD2
+FS400A	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
