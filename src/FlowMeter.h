@@ -6,8 +6,6 @@
  * @author sekdiy (https://github.com/sekdiy/FlowMeter)
  * @date 14.07.2015 Initial release.
  * @version See git comments for changes.
- *
- * @todo Split up flow sensor and flow meter into different classes and files.
  */
 
 #ifndef FLOWMETER_H
