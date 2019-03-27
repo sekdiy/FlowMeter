@@ -10,7 +10,7 @@ FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, voidFuncPtr ca
     _pin(pin),                                                              //!< store pin number
     _properties(prop),                                                      //!< store sensor properties
     _interruptCallback(callback),
-    _interruptMode(mode)                                            
+    _interruptMode(interruptMode)                                            
 {
   pinMode(pin, INPUT_PULLUP);                                               //!< initialize interrupt pin as input with pullup
   attachInterrupt(pin, _interruptCallback, _interruptMode);
