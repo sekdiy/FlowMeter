@@ -6,6 +6,8 @@
  * @author sekdiy (https://github.com/sekdiy/FlowMeter)
  * @date 14.07.2015 Initial release.
  * @version See git comments for changes.
+ *
+ * @todo Split up flow sensor and flow meter into different classes and files.
  */
 
 #ifndef FLOWMETER_H
@@ -42,7 +44,7 @@ class FlowMeter {
      * @param pin  The pin that the flow sensor is connected to (has to be interrupt capable, default: INT0).
      * @param prop The properties of the actual flow sensor being used (default: UncalibratedSensor).
      */
-    FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor);
+    FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, voidFuncPtr interruptCallback = nullptr, uint8_t interruptMode = RISING);
 
     double getCurrentFlowrate();                 //!< Returns the current flow rate since last reset (in l/min).
     double getCurrentVolume();                   //!< Returns the current volume since last reset (in l).
@@ -104,6 +106,8 @@ class FlowMeter {
   protected:
     unsigned int _pin;                           //!< connection pin (has to be interrupt capable!)
     FlowSensorProperties _properties;            //!< sensor properties (including calibration data)
+    voidFuncPtr _interruptCallback;              //!< interrupt callback
+    uint8_t _interruptMode;                      //!< interrupt mode (LOW, CHANGE, RISING, FALLING, HIGH)
 
     unsigned long _currentDuration;              //!< current tick duration (convenience, in ms)
     double _currentFrequency;                    //!< current pulses per second (convenience, in 1/s)
