@@ -61,6 +61,15 @@ void FlowMeter::count() {
     this->_currentPulses++;                                                 //!< this should be called from an interrupt service routine
 }
 
+void FlowMeter::pause() {
+    detachInterrupt(_pin);
+    this->currentPulses = 0;
+}
+
+void FlowMeter::resume() {
+    attachInterrupt(_pin, _interruptCallback, RISING);
+}
+
 void FlowMeter::reset() {
     detachInterrupt(_pin);                                                  //!< going to change interrupt variable(s)
     this->_currentPulses = 0;                                               //!< reset pulse counter

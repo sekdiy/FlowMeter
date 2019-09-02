@@ -83,6 +83,8 @@ class FlowMeter {
     void tick(unsigned long duration = 1000);
     void count();                                //!< Increments the internal pulse counter. Serves as an interrupt callback routine.
     void reset();                                //!< Prepares the flow meter for a fresh measurement. Resets all current values, but not the totals.
+    void pause();
+    void resume();
 
     /*
      * setters enabling continued metering across power cycles
