@@ -63,7 +63,7 @@ void FlowMeter::count() {
 
 void FlowMeter::pause() {
     detachInterrupt(_pin);
-    this->currentPulses = 0;
+    this->_currentPulses = 0;
 }
 
 void FlowMeter::resume() {
