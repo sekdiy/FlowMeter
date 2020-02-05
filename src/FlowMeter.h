@@ -44,7 +44,7 @@ class FlowMeter {
      * @param pin  The pin that the flow sensor is connected to (has to be interrupt capable, default: INT0).
      * @param prop The properties of the actual flow sensor being used (default: UncalibratedSensor).
      */
-    FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, voidFuncPtr interruptCallback = nullptr, uint8_t interruptMode = RISING);
+    FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, void (*callback)(void) = NULL, uint8_t interruptMode = RISING);
 
     double getCurrentFlowrate();                 //!< Returns the current flow rate since last reset (in l/min).
     double getCurrentVolume();                   //!< Returns the current volume since last reset (in l).
@@ -108,7 +108,7 @@ class FlowMeter {
   protected:
     unsigned int _pin;                           //!< connection pin (has to be interrupt capable!)
     FlowSensorProperties _properties;            //!< sensor properties (including calibration data)
-    voidFuncPtr _interruptCallback;              //!< interrupt callback
+    void (*_interruptCallback)(void);            //!< interrupt callback
     uint8_t _interruptMode;                      //!< interrupt mode (LOW, CHANGE, RISING, FALLING, HIGH)
 
     unsigned long _currentDuration;              //!< current tick duration (convenience, in ms)

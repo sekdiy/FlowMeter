@@ -6,14 +6,16 @@
 #include "FlowMeter.h"                                                      // https://github.com/sekdiy/FlowMeter
 #include <math.h>
 
-FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, voidFuncPtr callback, uint8_t interruptMode) :
+FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, void (*callback)(void), uint8_t interruptMode) :
     _pin(pin),                                                              //!< store pin number
     _properties(prop),                                                      //!< store sensor properties
     _interruptCallback(callback),
     _interruptMode(interruptMode)                                            
 {
   pinMode(pin, INPUT_PULLUP);                                               //!< initialize interrupt pin as input with pullup
-  attachInterrupt(pin, _interruptCallback, _interruptMode);
+
+  if (_interruptCallback != NULL)
+    attachInterrupt(pin, _interruptCallback, _interruptMode);
 }
 
 double FlowMeter::getCurrentFlowrate() {
