@@ -16,7 +16,7 @@ void setup() {
     // prepare serial communication
     Serial.begin(9600);
 
-    Meter = new FlowMeter(2, UncalibratedSensor, MeterISR, RISING);
+    Meter = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, MeterISR, RISING);
 
     // sometimes initializing the gear generates some pulses that we should ignore
     Meter->reset();

@@ -25,8 +25,8 @@ void setup() {
 
     // enable a call to the 'interrupt service handler' (ISR) on every rising edge at the interrupt pin
     // do this setup step for every ISR you have defined, depending on how many interrupts you use
-    Meter1 = new FlowMeter(2, UncalibratedSensor, Meter1ISR, RISING);
-    Meter2 = new FlowMeter(2, UncalibratedSensor, Meter2ISR, RISING);
+    Meter1 = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, Meter1ISR, RISING);
+    Meter2 = new FlowMeter(digitalPinToInterrupt(3), UncalibratedSensor, Meter2ISR, RISING);
 
     // sometimes initializing the gear generates some pulses that we should ignore
     Meter1->reset();

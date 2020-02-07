@@ -19,7 +19,7 @@ void setup() {
     Serial.begin(9600);
 
     // enable a call to the 'interrupt service handler' (ISR) on every rising edge at the interrupt pin
-    Meter = new FlowMeter(2, MySensor, MeterISR, RISING);
+    Meter = new FlowMeter(digitalPinToInterrupt(2), MySensor, MeterISR, RISING);
 
     // sometimes initializing the gear generates some pulses that we should ignore
     Meter->reset();
