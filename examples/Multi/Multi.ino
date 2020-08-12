@@ -21,11 +21,11 @@ void Meter2ISR() {
 
 void setup() {
     // prepare serial communication
-    Serial.begin(9600);
+    Serial.begin(115200);
 
-    // enable a call to the 'interrupt service handler' (ISR) on every rising edge at the interrupt pin
-    // do this setup step for every ISR you have defined, depending on how many interrupts you use
+    // get a new FlowMeter instance for an uncalibrated flow sensor and let them attach their 'interrupt service handler' (ISR) on every rising edge
     Meter1 = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, Meter1ISR, RISING);
+    // do this setup step for every  FlowMeter and ISR you have defined, depending on how many you need
     Meter2 = new FlowMeter(digitalPinToInterrupt(3), UncalibratedSensor, Meter2ISR, RISING);
 
     // sometimes initializing the gear generates some pulses that we should ignore

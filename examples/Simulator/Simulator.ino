@@ -6,7 +6,7 @@ FlowMeter *Meter;
 
 void setup() {
     // prepare serial communication
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // let's pretend there's a flow sensor connected to pin 3
     Meter = new FlowMeter(digitalPinToInterrupt(3), MySensor);

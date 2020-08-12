@@ -14,8 +14,9 @@ void MeterISR() {
 
 void setup() {
     // prepare serial communication
-    Serial.begin(9600);
+    Serial.begin(115200);
 
+    // get a new FlowMeter instance for an uncalibrated flow sensor on pin 2
     Meter = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, MeterISR, RISING);
 
     // sometimes initializing the gear generates some pulses that we should ignore

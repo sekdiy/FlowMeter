@@ -17,10 +17,10 @@ Getting started with **FlowMeter** is easy. Take a look at this simple example:
 ```c++
 void setup() {
   // prepare serial communication
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  // enable a call to a helper function on every rising edge
-  attachInterrupt(INT0, MeterISR, RISING);
+  // get a new FlowMeter instance for an uncalibrated flow sensor on pin 2
+  Meter = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, MeterISR, RISING);
 }
 
 void loop() {
@@ -28,13 +28,13 @@ void loop() {
   delay(period);
 
   // process the (possibly) counted ticks
-  Meter.tick(period);
+  Meter->tick(period);
 
   // output some measurement result
   Serial.print("Currently ");
-  Serial.print(Meter.getCurrentFlowrate());
+  Serial.print(Meter->getCurrentFlowrate());
   Serial.print(" l/min, ");
-  Serial.print(Meter.getTotalVolume());
+  Serial.print(Meter->getTotalVolume());
   Serial.println(" l total.");
 
   //
