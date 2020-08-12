@@ -6,11 +6,16 @@
 #include "FlowMeter.h"                                                      // https://github.com/sekdiy/FlowMeter
 #include <math.h>
 
-FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop) :
+FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, void (*callback)(void), uint8_t interruptMode) :
     _pin(pin),                                                              //!< store pin number
-    _properties(prop)                                                       //!< store sensor properties
+    _properties(prop),                                                      //!< store sensor properties
+    _interruptCallback(callback),
+    _interruptMode(interruptMode)                                            
 {
   pinMode(pin, INPUT_PULLUP);                                               //!< initialize interrupt pin as input with pullup
+
+  if (_interruptCallback != NULL)
+    attachInterrupt(pin, _interruptCallback, _interruptMode);
 }
 
 double FlowMeter::getCurrentFlowrate() {
@@ -32,10 +37,10 @@ double FlowMeter::getTotalVolume() {
 void FlowMeter::tick(unsigned long duration) {
     /* sampling and normalisation */
     double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
-    cli();                                                                  //!< going to change interrupt variable(s)
+    noInterrupts();                                                         //!< going to change interrupt variable(s)
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
     this->_currentPulses = 0;                                               //!< reset pulse counter after successfull sampling
-    sei();                                                                  //!< done changing interrupt variable(s)
+    interrupts();                                                           //!< done changing interrupt variable(s)
 
     /* determine current correction factor (from sensor properties) */
     unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));          //!< decile of current flow relative to sensor capacity
@@ -59,9 +64,9 @@ void FlowMeter::count() {
 }
 
 void FlowMeter::reset() {
-    cli();                                                                  //!< going to change interrupt variable(s)
+    noInterrupts();                                                         //!< going to change interrupt variable(s)
     this->_currentPulses = 0;                                               //!< reset pulse counter
-    sei();                                                                  //!< done changing interrupt variable(s)
+    interrupts();                                                           //!< done changing interrupt variable(s)
 
     this->_currentFrequency = 0.0f;
     this->_currentDuration = 0.0f;
