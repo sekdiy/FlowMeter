@@ -1,4 +1,4 @@
-# FlowMeter Library [![Version](https://img.shields.io/badge/FlowMeter-1.1.0-blue.svg 'still in beta')](https://github.com/sekdiy/FlowMeter) [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter) [![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fsekdiy%2FFlowMeter&cid=2238D739-76DE-4205-9768-2F3277FA2561&tid=UA-65656434-2&aip=1&dt=README)]()
+# FlowMeter Library [![Version](https://img.shields.io/badge/FlowMeter-1.2.0-blue.svg 'still in beta')](https://github.com/sekdiy/FlowMeter) [![Build Status](https://travis-ci.org/sekdiy/FlowMeter.svg?branch=master)](https://travis-ci.org/sekdiy/FlowMeter) [![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&dl=https%3A%2F%2Fgithub.com%2Fsekdiy%2FFlowMeter&cid=2238D739-76DE-4205-9768-2F3277FA2561&tid=UA-65656434-2&aip=1&dt=README)]()
 
 **FlowMeter** is an Arduino library that provides calibrated flow and volume measurement with flow sensors.
 
