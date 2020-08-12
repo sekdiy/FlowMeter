@@ -37,10 +37,10 @@ double FlowMeter::getTotalVolume() {
 void FlowMeter::tick(unsigned long duration) {
     /* sampling and normalisation */
     double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
-    detachInterrupt(_pin);                                                  //!< going to change interrupt variable(s)
+    noInterrupts();                                                         //!< going to change interrupt variable(s)
     double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
     this->_currentPulses = 0;                                               //!< reset pulse counter after successfull sampling
-    attachInterrupt(_pin, _interruptCallback, RISING);                        //!< done changing interrupt variable(s)
+    interrupts();                                                           //!< done changing interrupt variable(s)
 
     /* determine current correction factor (from sensor properties) */
     unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));          //!< decile of current flow relative to sensor capacity
@@ -63,19 +63,10 @@ void FlowMeter::count() {
     this->_currentPulses++;                                                 //!< this should be called from an interrupt service routine
 }
 
-void FlowMeter::pause() {
-    detachInterrupt(_pin);
-    this->_currentPulses = 0;
-}
-
-void FlowMeter::resume() {
-    attachInterrupt(_pin, _interruptCallback, RISING);
-}
-
 void FlowMeter::reset() {
-    detachInterrupt(_pin);                                                  //!< going to change interrupt variable(s)
+    noInterrupts();                                                         //!< going to change interrupt variable(s)
     this->_currentPulses = 0;                                               //!< reset pulse counter
-    attachInterrupt(_pin, _interruptCallback, RISING);                        //!< done changing interrupt variable(s)
+    interrupts();                                                           //!< done changing interrupt variable(s)
 
     this->_currentFrequency = 0.0f;
     this->_currentDuration = 0.0f;
