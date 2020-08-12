@@ -44,8 +44,8 @@ class FlowMeter {
      */
     FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor);
 
-    double getCurrentFlowrate();                 //!< Returns the current flow rate since last reset (in l/min).
-    double getCurrentVolume();                   //!< Returns the current volume since last reset (in l).
+    double getCurrentFlowrate();                 //!< Returns the current flow rate since last tick (in l/min).
+    double getCurrentVolume();                   //!< Returns the current volume since last tick (in l).
 
     double getTotalFlowrate();                   //!< Returns the (linear) average flow rate in this flow meter instance (in l/min).
     double getTotalVolume();                     //!< Returns the total volume flown trough this flow meter instance (in l).
