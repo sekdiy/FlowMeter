@@ -73,10 +73,6 @@ void FlowMeter::reset() {
     this->_currentFlowrate = 0.0f;
     this->_currentVolume = 0.0f;
     this->_currentCorrection = 0.0f;
-
-    this->_totalDuration = 0.0f;
-    this->_totalVolume = 0.0f;
-    this->_totalCorrection = 0.0f;
 }
 
 unsigned int FlowMeter::getPin() {
