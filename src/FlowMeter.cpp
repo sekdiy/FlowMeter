@@ -36,12 +36,15 @@ double FlowMeter::getTotalVolume() {
 }
 
 void FlowMeter::tick(unsigned long duration) {
-    /* sampling and normalisation */
-    double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
+    /* sampling */
     noInterrupts();                                                         //!< going to change interrupt variable(s)
-    double frequency = this->_currentPulses / seconds;                      //!< normalised frequency (in 1/s)
-    this->_currentPulses = 0;                                               //!< reset pulse counter after successfull sampling
+    volatile unsigned long pulses = this->_currentPulses;                   //!< sample current pulses from counter
+    this->_currentPulses = 0;                                               //!< reset pulse counter after successful sampling
     interrupts();                                                           //!< done changing interrupt variable(s)
+
+    /* normalisation */
+    double seconds = duration / 1000.0f;                                    //!< normalised duration (in s, i.e. per 1000ms)
+    double frequency = pulses / seconds;                                    //!< normalised frequency (in 1/s)
 
     /* determine current correction factor (from sensor properties) */
     unsigned int decile = floor(10.0f * frequency / (this->_properties.capacity * this->_properties.kFactor));          //!< decile of current flow relative to sensor capacity
