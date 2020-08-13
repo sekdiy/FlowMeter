@@ -10,9 +10,6 @@ void setup() {
 
     // let's pretend there's a flow sensor connected to pin 3
     Meter = new FlowMeter(digitalPinToInterrupt(3), MySensor);
-
-    // sometimes initializing the gear generates some pulses that we should ignore
-    Meter->reset();
 }
 
 void loop() {

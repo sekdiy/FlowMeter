@@ -25,12 +25,9 @@ void setup() {
 
     // get a new FlowMeter instance for an uncalibrated flow sensor and let them attach their 'interrupt service handler' (ISR) on every rising edge
     Meter1 = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, Meter1ISR, RISING);
+    
     // do this setup step for every  FlowMeter and ISR you have defined, depending on how many you need
     Meter2 = new FlowMeter(digitalPinToInterrupt(3), UncalibratedSensor, Meter2ISR, RISING);
-
-    // sometimes initializing the gear generates some pulses that we should ignore
-    Meter1->reset();
-    Meter2->reset();
 }
 
 void loop() {

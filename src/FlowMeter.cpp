@@ -12,11 +12,13 @@ FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, void (*callbac
     _interruptCallback(callback),
     _interruptMode(interruptMode)                                            
 {
-  pinMode(this->_pin, INPUT_PULLUP);                                        //!< initialize interrupt pin as input with pullup
+    pinMode(this->_pin, INPUT_PULLUP);                                      //!< initialize interrupt pin as input with pullup
 
-  if (this->_interruptCallback != NULL) {                                   //!< if ISR callback has been provided, attach it
-    attachInterrupt(this->_pin, this->_interruptCallback, this->_interruptMode);
-  }
+    if (this->_interruptCallback != NULL) {                                 //!< if ISR callback has been provided, attach it
+        attachInterrupt(this->_pin, this->_interruptCallback, this->_interruptMode);
+    }
+
+    this->reset();                                                          //!< ignore pulses generated during initialisation
 }
 
 double FlowMeter::getCurrentFlowrate() {

@@ -20,9 +20,6 @@ void setup() {
 
     // get a new FlowMeter instance for an uncalibrated flow sensor on pin 2
     Meter = new FlowMeter(digitalPinToInterrupt(2), MySensor, MeterISR, RISING);
-
-    // sometimes initializing the gear generates some pulses that we should ignore
-    Meter->reset();
 }
 
 void loop() {
