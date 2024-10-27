@@ -12,6 +12,7 @@
 #define _FLOWMETER_H_
 
 #include "FlowSensorProperties.h"
+#include "FlowSensorCalibration.h"
 
 /**
  * FlowMeter
@@ -74,56 +75,6 @@ class FlowMeter {
     double _totalCorrection = 0.0f;              // accumulated correction factors
 
     volatile unsigned long _currentPulses = 0;   // pulses within current sample period
-};
-
-/**
- * FlowSensorCalibration
- *
- * Convenience class for manipulating sensor properties.
- */
-class FlowSensorCalibration {
-  public:
-    FlowSensorCalibration() {};
-    FlowSensorCalibration(FlowSensorProperties properties): _properties(properties) {};
-
-    FlowSensorCalibration* setProperties(FlowSensorProperties properties) {
-        this->_properties = properties;
-        return this;
-    };
-
-    FlowSensorCalibration* setCapacity(double capacity) {
-        this->_properties.capacity = capacity;
-        return this;
-    }
-
-    FlowSensorCalibration* setKFactor(double kFactor) {
-        this->_properties.kFactor = kFactor;
-        return this;
-    }
-
-    FlowSensorCalibration* setMeterFactorPerDecile(unsigned int decile, unsigned int mFactor) {
-        this->_properties.mFactor[decile] = mFactor;
-        return this;
-    }
-
-    FlowSensorProperties getProperties() {
-        return this->_properties;
-    }
-
-    double getCapacity() {
-        return this->_properties.capacity;
-    }
-
-    double getKFactor() {
-        return this->_properties.kFactor;
-    }
-
-    unsigned int getMeterFactorPerDecile(unsigned int decile) {
-        return this->_properties.mFactor[decile];
-    }
-
-  protected:
-    FlowSensorProperties _properties;
 };
 
 #endif   // _FLOWMETER_H_
