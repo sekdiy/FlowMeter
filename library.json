@@ -1,0 +1,45 @@
+{
+    "name": "FlowMeter",
+    "version": "1.3.0",
+    "description": "An Arduino flow meter library that provides calibrated liquid flow and volume measurement with flow sensors.",
+    "keywords": "Sensors, Flowmeter",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/sekdiy/FlowMeter.git"
+    },
+    "authors":
+    [
+      {
+        "name": "sekdiy",
+        "email": "sek@sekdiy.de"
+      }
+    ],
+    "examples": 
+    [
+        {
+            "name": "Simple",
+            "base": "examples/Simple",
+            "files": "Simple.ino.cpp"
+        },
+        {
+            "name": "Multi",
+            "base": "examples/Multi",
+            "files": "Multi.ino.cpp"
+        },
+        {
+            "name": "Simulator",
+            "base": "examples/Simulator",
+            "files": "Simulator.ino.cpp"
+        },
+        {
+            "name": "Calibration",
+            "base": "examples/Calibration",
+            "files": "Calibration.ino.cpp"
+        }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*"
+  }
+  
