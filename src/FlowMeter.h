@@ -8,10 +8,8 @@
  * @version See git comments for changes.
  */
 
-#ifndef FLOWMETER_H
-#define FLOWMETER_H
-
-#include "Arduino.h"
+#ifndef _FLOWMETER_H_
+#define _FLOWMETER_H_
 
 #include "FlowSensorProperties.h"
 
@@ -28,80 +26,54 @@ class FlowMeter {
      */
     FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, void (*callback)(void) = NULL, uint8_t interruptMode = RISING);
 
-    double getCurrentFlowrate();                 //!< Returns the current flow rate since last tick (in l/min).
-    double getCurrentVolume();                   //!< Returns the current volume since last tick (in l).
+    double getCurrentFlowrate();                 // Returns the current flow rate since last tick (in l/min).
+    double getCurrentVolume();                   // Returns the current volume since last tick (in l).
 
-    double getTotalFlowrate();                   //!< Returns the (linear) average flow rate in this flow meter instance (in l/min).
-    double getTotalVolume();                     //!< Returns the total volume flown trough this flow meter instance (in l).
+    double getTotalFlowrate();                   // Returns the (linear) average flow rate in this flow meter instance (in l/min).
+    double getTotalVolume();                     // Returns the total volume flown trough this flow meter instance (in l).
 
-    /**
-     * The tick method updates all internal calculations at the end of a measurement period.
-     *
-     * We're calculating flow and volume data over time.
-     * The actual pulses have to be sampled using the count method (i.e. via an interrupt service routine).
-     *
-     * Flow sensor formulae:
-     *
-     * Let K: pulses per second per unit of measure (i.e. (1/s)/(l/min)),
-     *     f: pulse frequency (1/s),
-     *     Q: flow rate (l/min),
-     *     p: sensor pulses (no dimension/unit),
-     *     t: time since last measurements (s).
-     *
-     * K = f / Q             | units: (1/s) / (l/min) = (1/s) / (l/min)
-     * <=>                   | Substitute p / t for f in order to allow for different measurement intervals
-     * K = (p / t) / Q       | units: ((1/s)/(l/min)) = (1/s) / (l/min)
-     * <=>                   | Solve for Q:
-     * Q = (p / t) / K       | untis: l/min = 1/s / (1/s / (l/min))
-     * <=>                   | Volume in l:
-     * V = Q / 60            | units: l = (l/min) / (min)
-     *
-     * The property K is sometimes stated in pulses per liter or pulses per gallon.
-     * In these cases the unit of measure has to be converted accordingly (e.g. from gal/s to l/min).
-     * See file G34_Flow_rate_to_frequency.jpg for reference.
-     *
-     * @param duration The tick duration (in ms).
-     */
-    void tick(unsigned long duration = 1000);
-    void count();                                //!< Increments the internal pulse counter. Serves as an interrupt callback routine.
-    void reset();                                //!< Prepares the flow meter for a fresh measurement. Resets all current values, but not the totals.
+    void tick(unsigned long duration = 1000);    // Updates all internal calculations at the end of a measurement period.
+    void count();                                // Increments the internal pulse counter. Serves as an interrupt callback routine.
+    void reset();                                // Prepares the flow meter for a fresh measurement. Resets all current values, but not the totals.
 
     /*
      * setters enabling continued metering across power cycles
      */ 
-    FlowMeter* setTotalDuration(unsigned long totalDuration); //!< Sets the total (overall) duration (i.e. after power up).
-    FlowMeter* setTotalVolume(double totalVolume);            //!< Sets the total (overall) volume (i.e. after power up).
-    FlowMeter* setTotalCorrection(double totalCorrection);    //!< Sets the total (overall) correction factor (i.e. after power up).
+
+    FlowMeter* setTotalDuration(unsigned long totalDuration); // Sets the total (overall) duration (i.e. after power up).
+    FlowMeter* setTotalVolume(double totalVolume);            // Sets the total (overall) volume (i.e. after power up).
+    FlowMeter* setTotalCorrection(double totalCorrection);    // Sets the total (overall) correction factor (i.e. after power up).
 
     /*
      * convenience methods and calibration helpers
      */
-    unsigned int getPin();                       //!< Returns the Arduino pin number that the flow sensor is connected to.
 
-    unsigned long getCurrentDuration();          //!< Returns the duration of the current tick (in ms).
-    double getCurrentFrequency();                //!< Returns the pulse rate in the current tick (in 1/s).
-    double getCurrentError();                    //!< Returns the error resulting from the current measurement (in %).
+    unsigned int getPin();                       // Returns the Arduino pin number that the flow sensor is connected to.
 
-    unsigned long getTotalDuration();            //!< Returns the total run time of this flow meter instance (in ms).
-    double getTotalError();                      //!< Returns the (linear) average error of this flow meter instance (in %).
+    unsigned long getCurrentDuration();          // Returns the duration of the current tick (in ms).
+    double getCurrentFrequency();                // Returns the pulse rate in the current tick (in 1/s).
+    double getCurrentError();                    // Returns the error resulting from the current measurement (in %).
+
+    unsigned long getTotalDuration();            // Returns the total run time of this flow meter instance (in ms).
+    double getTotalError();                      // Returns the (linear) average error of this flow meter instance (in %).
 
   protected:
-    unsigned int _pin;                           //!< connection pin (has to be interrupt capable!)
-    FlowSensorProperties _properties;            //!< sensor properties (including calibration data)
-    void (*_interruptCallback)(void);            //!< interrupt callback
-    uint8_t _interruptMode;                      //!< interrupt mode (LOW, CHANGE, RISING, FALLING, HIGH)
+    unsigned int _pin;                           // connection pin (has to be interrupt capable!)
+    FlowSensorProperties _properties;            // sensor properties (including calibration data)
+    void (*_interruptCallback)(void);            // interrupt callback
+    uint8_t _interruptMode;                      // interrupt mode (LOW, CHANGE, RISING, FALLING, HIGH)
 
-    unsigned long _currentDuration;              //!< current tick duration (convenience, in ms)
-    double _currentFrequency;                    //!< current pulses per second (convenience, in 1/s)
-    double _currentFlowrate = 0.0f;              //!< current flow rate (in l/tick), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
-    double _currentVolume = 0.0f;                //!< current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
-    double _currentCorrection;                   //!< currently applied correction factor
+    unsigned long _currentDuration;              // current tick duration (convenience, in ms)
+    double _currentFrequency;                    // current pulses per second (convenience, in 1/s)
+    double _currentFlowrate = 0.0f;              // current flow rate (in l/tick), e.g.: 1 l / min = 1 pulse / s / (pulses / s / l / min)
+    double _currentVolume = 0.0f;                // current volume (in l), e.g.: 1 l = 1 (l / min) / (60 * s)
+    double _currentCorrection;                   // currently applied correction factor
 
-    unsigned long _totalDuration = 0.0f;         //!< total measured duration since begin of measurement (in ms)
-    double _totalVolume = 0.0f;                  //!< total volume since begin of measurement (in l)
-    double _totalCorrection = 0.0f;              //!< accumulated correction factors
+    unsigned long _totalDuration = 0.0f;         // total measured duration since begin of measurement (in ms)
+    double _totalVolume = 0.0f;                  // total volume since begin of measurement (in l)
+    double _totalCorrection = 0.0f;              // accumulated correction factors
 
-    volatile unsigned long _currentPulses = 0;   //!< pulses within current sample period
+    volatile unsigned long _currentPulses = 0;   // pulses within current sample period
 };
 
 /**
@@ -154,4 +126,4 @@ class FlowSensorCalibration {
     FlowSensorProperties _properties;
 };
 
-#endif   // FLOWMETER_H
+#endif   // _FLOWMETER_H_
