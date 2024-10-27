@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include <FlowMeter.h>  // https://github.com/sekdiy/FlowMeter
 
 // connect a flow meter to an interrupt pin (see notes on your Arduino model for pin numbers)

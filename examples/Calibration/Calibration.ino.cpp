@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include <FlowMeter.h>  // https://github.com/sekdiy/FlowMeter
 
 // enter your own sensor properties here, including calibration points
