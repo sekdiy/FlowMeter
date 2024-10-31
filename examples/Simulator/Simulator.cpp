@@ -9,8 +9,8 @@ void setup() {
     // prepare serial communication
     Serial.begin(115200);
 
-    // let's pretend there's a flow sensor connected to pin 3
-    Meter = new FlowMeter(digitalPinToInterrupt(3), MySensor);
+    // let's pretend there's a calibrated flow sensor connected to pin 3
+    Meter = new FlowMeter(3, MySensor);
 }
 
 void loop() {
@@ -26,10 +26,10 @@ void loop() {
     // wait that random period
     delay(period);
 
-    // process the counted ticks
-    Meter->tick(period);
+    // update the flow measurement calculations
+    Meter->update(period);
 
-    // output some measurement result
+    // fetch and output some measurement results
     Serial.println("FlowMeter - period: " + String(Meter->getCurrentDuration() / 1000.0f, 3) + "s, " +
                   "frequency: " + String(Meter->getCurrentFrequency(), 0) + "Hz, " +
                   "volume: " + Meter->getCurrentVolume() + "l, " +

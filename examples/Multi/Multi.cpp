@@ -25,21 +25,21 @@ void setup() {
     Serial.begin(115200);
 
     // get a new FlowMeter instance for an uncalibrated flow sensor and let them attach their 'interrupt service handler' (ISR) on every rising edge
-    Meter1 = new FlowMeter(digitalPinToInterrupt(2), UncalibratedSensor, Meter1ISR, RISING);
+    Meter1 = new FlowMeter(2, UncalibratedSensor, Meter1ISR, RISING);
     
     // do this setup step for every  FlowMeter and ISR you have defined, depending on how many you need
-    Meter2 = new FlowMeter(digitalPinToInterrupt(3), UncalibratedSensor, Meter2ISR, RISING);
+    Meter2 = new FlowMeter(3, UncalibratedSensor, Meter2ISR, RISING);
 }
 
 void loop() {
     // wait between output updates
     delay(period);
 
-    // process the (possibly) counted ticks
-    Meter1->tick(period);
-    Meter2->tick(period);
+    // update the flow measurement calculations
+    Meter1->update(period);
+    Meter2->update(period);
 
-    // output some measurement result
+    // fetch and output some measurement results
     Serial.println("Meter 1 currently " + String(Meter1->getCurrentFlowrate()) + " l/min, " + String(Meter1->getTotalVolume())+ " l total.");
     Serial.println("Meter 2 currently " + String(Meter2->getCurrentFlowrate()) + " l/min, " + String(Meter2->getTotalVolume())+ " l total.");
 
