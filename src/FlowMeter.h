@@ -24,6 +24,7 @@ class FlowMeter {
      * 
      * @param pin  The pin that the flow sensor is connected to (has to be interrupt capable, default: INT0).
      * @param prop The properties of the actual flow sensor being used (default: UncalibratedSensor).
+     * @param callback The interrupt callback handler
      */
     FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, void (*callback)(void) = NULL, uint8_t interruptMode = RISING);
 
@@ -33,9 +34,15 @@ class FlowMeter {
     double getTotalFlowrate();                   // Returns the (linear) average flow rate in this flow meter instance (in l/min).
     double getTotalVolume();                     // Returns the total volume flown trough this flow meter instance (in l).
 
-    void tick(unsigned long duration = 1000);    // Updates all internal calculations at the end of a measurement period.
+    void update(unsigned long duration = 1000);  // Updates all internal calculations at the end of a measurement period.
     void count();                                // Increments the internal pulse counter. Serves as an interrupt callback routine.
     void reset();                                // Prepares the flow meter for a fresh measurement. Resets all current values, but not the totals.
+
+    /**
+     * deprecated methods
+     */
+    
+    void tick(unsigned long duration = 1000) { update(duration); }
 
     /*
      * setters enabling continued metering across power cycles

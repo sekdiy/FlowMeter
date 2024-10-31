@@ -44,7 +44,7 @@ double FlowMeter::getTotalVolume() {
 }
 
 /**
- * The tick method updates all internal calculations at the end of a measurement period.
+ * The update method updates all internal calculations at the end of a measurement period.
  *
  * We're calculating flow and volume data over time.
  * The actual pulses have to be sampled using the count method (i.e. via an interrupt service routine).
@@ -69,9 +69,9 @@ double FlowMeter::getTotalVolume() {
  * In these cases the unit of measure has to be converted accordingly (e.g. from gal/s to l/min).
  * See file G34_Flow_rate_to_frequency.jpg for reference.
  *
- * @param duration The tick duration (in ms).
+ * @param duration The update duration (in ms).
  */
-void FlowMeter::tick(unsigned long duration) {
+void FlowMeter::update(unsigned long duration) {
     /* sampling */
     noInterrupts();                                                         // going to change interrupt variable(s)
     volatile unsigned long pulses = this->_currentPulses;                   // sample current pulses from counter
@@ -92,7 +92,7 @@ void FlowMeter::tick(unsigned long duration) {
     this->_currentVolume = this->_currentFlowrate / (60.0f/seconds);        // get volume (in l) from normalised flow rate and normalised time
 
     /* update statistics: */
-    this->_currentDuration = duration;                                      // store current tick duration (convenience, in ms)
+    this->_currentDuration = duration;                                      // store current update duration (convenience, in ms)
     this->_currentFrequency = frequency;                                    // store current pulses per second (convenience, in 1/s)
     this->_totalDuration += duration;                                       // accumulate total duration (in ms)
     this->_totalVolume += this->_currentVolume;                             // accumulate total volume (in l)
