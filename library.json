@@ -12,7 +12,8 @@
     [
       {
         "name": "sekdiy",
-        "email": "sek@sekdiy.de"
+        "email": "sek@sekdiy.de",
+        "maintainer": true
       }
     ],
     "examples": 
@@ -20,26 +21,30 @@
         {
             "name": "Simple",
             "base": "examples/Simple",
-            "files": "Simple.ino.cpp"
+            "files": ["Simple.cpp"]
         },
         {
             "name": "Multi",
             "base": "examples/Multi",
-            "files": "Multi.ino.cpp"
+            "files": ["Multi.cpp"]
         },
         {
             "name": "Simulator",
             "base": "examples/Simulator",
-            "files": "Simulator.ino.cpp"
+            "files": ["Simulator.cpp"]
         },
         {
             "name": "Calibration",
             "base": "examples/Calibration",
-            "files": "Calibration.ino.cpp"
+            "files": ["Calibration.cpp"]
         }
     ],
+    "export":
+    {
+      "exclude": ["wiki"]
+    },
     "license": "MIT",
-    "frameworks": "*",
+    "frameworks": "arduino",
     "platforms": "*"
   }
   
