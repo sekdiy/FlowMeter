@@ -28,5 +28,7 @@ typedef struct {
 extern FlowSensorProperties UncalibratedSensor; // default sensor
 extern FlowSensorProperties FS300A;             // see documentation about FS300A/SEN02141B
 extern FlowSensorProperties FS400A;             // see documentation about FS400A/USN-HS10TA
+extern FlowSensorProperties FS400A_cal;         // see https://github.com/sekdiy/FlowMeter/wiki/Calibration#2-calibration-example-irrigation-with-fs400a
+extern FlowSensorProperties FHKCS_1mm_0deg;     // see https://github.com/sekdiy/FlowMeter/wiki/Calibration#3-calibration-example-digimesa-fhksc
 
 #endif   // __FLOWSENSORPROPERTIES_H_
