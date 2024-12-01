@@ -27,6 +27,12 @@ FlowMeter::FlowMeter(unsigned int pin, FlowSensorProperties prop, void (*callbac
     this->reset();                                                          // ignore pulses generated during initialisation
 }
 
+FlowMeter::~FlowMeter() {
+    if (this->_interruptCallback != NULL) {                                 // if ISR callback has been provided, detach it
+        detachInterrupt(digitalPinToInterrupt(this->_pin));
+    }
+}
+
 double FlowMeter::getCurrentFlowrate() {
     return this->_currentFlowrate;                                          // in l/min
 }

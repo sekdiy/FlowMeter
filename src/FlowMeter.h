@@ -27,6 +27,7 @@ class FlowMeter {
      * @param callback The interrupt callback handler
      */
     FlowMeter(unsigned int pin = 2, FlowSensorProperties prop = UncalibratedSensor, void (*callback)(void) = NULL, uint8_t interruptMode = RISING);
+    ~FlowMeter();                                // Cleans up a flow meter object.
 
     double getCurrentFlowrate();                 // Returns the current flow rate since last tick (in l/min).
     double getCurrentVolume();                   // Returns the current volume since last tick (in l).
